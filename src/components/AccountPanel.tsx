@@ -3,6 +3,10 @@ import { createPortal } from "react-dom";
 import {
   ArrowLeftRight,
   Banknote,
+  ChevronRight,
+  Crown,
+  Receipt,
+  Zap,
   FileText,
   Headphones,
   LogOut,
@@ -19,6 +23,14 @@ import {
 import type { AssetSubPage } from "./WithdrawView";
 import "./accountPanel.css";
 import { useCommunity } from "./community/Community";
+import {
+  TierBadge,
+  countdown,
+  fmtTime,
+  tierName,
+  useMembership,
+  useNow,
+} from "./membership/Membership";
 
 const ASSETS = [
   { id: "overview", icon: Wallet, zh: "模拟资产", en: "Demo assets" },
@@ -49,6 +61,7 @@ export function AccountPanel({
   onLive,
   onStudio,
   onSupport,
+  onMembership,
   onLogout,
 }: {
   lang: "zh" | "en";
@@ -58,10 +71,15 @@ export function AccountPanel({
   onLive: () => void;
   onStudio: () => void;
   onSupport: () => void;
+  /** Opens `#vip/<path>` (member centre, checkout, orders). */
+  onMembership: (path?: string) => void;
   onLogout: () => void;
 }) {
   const t = (zh: string, en: string) => (lang === "zh" ? zh : en);
   const community = useCommunity();
+  const member = useMembership();
+  const now = useNow(1000);
+  const paid = member.tier !== "free";
   const panel = useRef<HTMLDivElement>(null),
     close = useRef(onClose);
   close.current = onClose;
@@ -145,17 +163,76 @@ export function AccountPanel({
         </header>
         <div className="account-panel-body">
           <div className="account-panel-profile">
-            <span className="account-panel-avatar">
-              <User size={32} />
+            <span className={`mb-ava is-md is-${member.tier}`}>
+              <User size={22} />
+              {paid && (
+                <i>
+                  <Crown strokeWidth={2.6} />
+                </i>
+              )}
             </span>
             <div>
               <h2>
                 GUEST-16bf <span className="ui-badge-warn">DEMO</span>
+                {paid && <TierBadge tier={member.tier} lang={lang} />}
               </h2>
               <p>ID 602656</p>
               <span>{email}</span>
             </div>
           </div>
+          <button
+            className={`account-member is-${member.tier}`}
+            onClick={() => onMembership()}
+          >
+            <span className="account-member-top">
+              <span className="account-member-name">
+                <Crown size={15} strokeWidth={2.4} />
+                {paid ? tierName(member.tier, lang) : t("开通会员", "Become a member")}
+              </span>
+              <em>
+                {paid
+                  ? member.state.autoRenew
+                    ? t(
+                        `${fmtTime(member.state.expiresAt, false)} 自动续费`,
+                        `Renews ${fmtTime(member.state.expiresAt, false)}`,
+                      )
+                    : t(
+                        `有效期至 ${fmtTime(member.state.expiresAt, false)}`,
+                        `Until ${fmtTime(member.state.expiresAt, false)}`,
+                      )
+                  : t("低至 $10/月", "From $10/mo")}
+                <ChevronRight size={14} />
+              </em>
+            </span>
+            <span className="account-member-quota">
+              <span>
+                <Zap size={12} strokeWidth={2.6} />
+                {t("今日 AI 次数", "AI analyses today")}
+                <b>
+                  {member.left}
+                  <small>/{member.limit}</small>
+                </b>
+              </span>
+              <small>
+                {countdown(member.resetAt - now)} {t("后重置", "to reset")}
+              </small>
+            </span>
+            <i className="account-member-bar">
+              <em
+                style={{
+                  width: `${(member.left / Math.max(1, member.limit)) * 100}%`,
+                }}
+              />
+            </i>
+            {!paid && (
+              <span className="account-member-hint">
+                {t(
+                  "AI诊股 · AI分析 · K线分析 · 特色指标，每日最多 300 次",
+                  "Up to 300 AI analyses a day across every AI feature",
+                )}
+              </span>
+            )}
+          </button>
           <section>
             <h2>{t("用户", "User")}</h2>
             {menu([
@@ -168,6 +245,25 @@ export function AccountPanel({
                   onClose();
                   community.openFollowing();
                 },
+              },
+            ])}
+          </section>
+          <section>
+            <h2>{t("会员", "Membership")}</h2>
+            {menu([
+              {
+                id: "vip",
+                icon: Crown,
+                zh: "会员中心",
+                en: "Membership",
+                onClick: () => onMembership(),
+              },
+              {
+                id: "orders",
+                icon: Receipt,
+                zh: "订单与收据",
+                en: "Orders",
+                onClick: () => onMembership("orders"),
               },
             ])}
           </section>
@@ -214,8 +310,8 @@ export function AccountPanel({
               {
                 id: "support",
                 icon: Headphones,
-                zh: "客服中心",
-                en: "Help center",
+                zh: member.tier === "elite" ? "专属客服" : "客服中心",
+                en: member.tier === "elite" ? "Elite support" : "Help center",
                 onClick: onSupport,
               },
             ])}

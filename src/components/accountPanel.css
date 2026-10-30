@@ -60,20 +60,6 @@
   gap: 12px;
   margin-bottom: 16px;
 }
-.account-panel-avatar {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  flex-shrink: 0;
-  border-radius: 14px;
-  background: linear-gradient(145deg, #598bff, #2458e7);
-  color: white;
-}
-.account-panel-avatar svg {
-  width: 25px;
-  height: 25px;
-}
 .account-panel-profile h2 {
   display: flex;
   align-items: center;
@@ -175,4 +161,127 @@
   .account-panel {
     animation: none;
   }
+}
+/* Membership card: neutral for free users, tier-coloured once a plan is active */
+.account-member {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 14px;
+  padding: 12px 12px 11px;
+  border-radius: 14px;
+  text-align: left;
+  color: var(--ui-ink);
+  background:
+    radial-gradient(120% 140% at 100% 0%, rgb(226 166 59 / 0.16), transparent 60%),
+    var(--ui-surface-2);
+  border: 1px solid var(--ui-line);
+  transition: filter 0.15s;
+}
+.account-member:hover {
+  filter: brightness(0.98);
+}
+.account-member.is-basic {
+  background: var(--mb-basic-bg);
+  border-color: transparent;
+  color: #fff;
+}
+.account-member.is-premium {
+  background: var(--mb-premium-bg);
+  border-color: transparent;
+  color: var(--mb-premium-ink);
+}
+.account-member.is-elite {
+  background: var(--mb-elite-bg);
+  border-color: transparent;
+  color: var(--mb-elite-ink);
+}
+.account-member-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.account-member-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 700;
+}
+.account-member.is-free .account-member-name svg {
+  color: var(--mb-gold);
+}
+.account-member-top em {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 600;
+  opacity: 0.8;
+}
+.account-member.is-free .account-member-top em {
+  padding: 2px 4px 2px 8px;
+  border-radius: 99px;
+  color: var(--mb-premium-ink);
+  background: var(--mb-premium-bg);
+  opacity: 1;
+}
+.account-member-quota {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11px;
+}
+.account-member-quota > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.85;
+}
+.account-member-quota b {
+  margin-left: 4px;
+  font-size: 16px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  opacity: 1;
+}
+.account-member-quota b small {
+  font-size: 11px;
+  font-weight: 500;
+  opacity: 0.7;
+}
+.account-member-quota > small {
+  font-size: 10.5px;
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}
+.account-member-bar {
+  display: block;
+  height: 5px;
+  border-radius: 99px;
+  background: var(--ui-surface-3);
+  overflow: hidden;
+}
+.account-member:not(.is-free) .account-member-bar {
+  background: rgb(255 255 255 / 0.25);
+}
+.account-member.is-premium .account-member-bar {
+  background: rgb(63 43 6 / 0.15);
+}
+.account-member-bar em {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--ui-brand);
+}
+.account-member:not(.is-free) .account-member-bar em {
+  background: currentColor;
+}
+.account-member-hint {
+  font-size: 10.5px;
+  color: var(--ui-ink-3);
 }

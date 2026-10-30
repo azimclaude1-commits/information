@@ -3,7 +3,7 @@ import { ArrowLeft, Bell, ChevronDown, Radio, Star, X } from "lucide-react";
 import type { Instrument } from "../data/marketData";
 import { MarketChart, type PriceLine } from "./MarketChart";
 import { MarketDetails } from "./MarketDetails";
-import { SignatureIndicators } from "./SignatureIndicators";
+import { SignatureGate } from "./membership/SignatureGate";
 import { displaySymbol, marketOf, type Side } from "./demoTrading";
 import { number, signed } from "./marketModel";
 
@@ -238,7 +238,7 @@ export function MobileTradingDesk({
               onTemplateApplied={() => setTemplate(undefined)}
             />
           </div>
-          <SignatureIndicators instrument={i} period={period} lang={lang} mobile />
+          <SignatureGate instrument={i} period={period} lang={lang} mobile />
           <div className="mt-chart-trade">
             <button className="mt-buy" onClick={() => openTrade("buy")}>
               <span>{t("买入", "Buy")}</span>

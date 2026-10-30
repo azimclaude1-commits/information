@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { QuotaPill, useMembership } from "./membership/Membership";
 import {
   Search,
   Flame,
@@ -398,6 +399,20 @@ export const MarketOverviewView: React.FC<MarketOverviewViewProps> = ({
     instruments.find((i) => i.category === "crypto") ??
     instruments[0];
 
+  /** Ace questions and the K-line reading draw from the shared daily AI quota. */
+  const membership = useMembership();
+  const klineKey = `kline:${klineInst.symbol}`;
+  const openKline = () => {
+    if (
+      membership.request(
+        "kline",
+        klineKey,
+        `${klineInst.symbol} ${lang === "zh" ? "K线分析" : "chart analysis"}`,
+      )
+    )
+      setAceActiveTopic("kline_analysis");
+  };
+
   // 热门榜单 filter state (Screenshot 3)
   const [hotListFilter, setHotListFilter] = useState<string>("all");
 
@@ -421,6 +436,15 @@ export const MarketOverviewView: React.FC<MarketOverviewViewProps> = ({
     e.preventDefault();
     if (!aceInput.trim()) return;
     const question = aceInput.trim();
+    if (
+      !membership.request(
+        "insight",
+        `ace:${Date.now()}`,
+        `Ace · ${question.slice(0, 24)}`,
+        { force: true },
+      )
+    )
+      return;
     const match = instruments.find(
       (i) =>
         question.toUpperCase().includes(i.symbol.split("/")[0]) ||
@@ -1450,7 +1474,7 @@ export const MarketOverviewView: React.FC<MarketOverviewViewProps> = ({
                   </span>
                 </button>
                 <button
-                  onClick={() => setAceActiveTopic("kline_analysis")}
+                  onClick={openKline}
                   className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-medium cursor-pointer ${
                     aceActiveTopic === "kline_analysis"
                       ? "bg-slate-200/80 dark:bg-slate-800 text-slate-900 dark:text-white"
@@ -1609,7 +1633,7 @@ export const MarketOverviewView: React.FC<MarketOverviewViewProps> = ({
                         </p>
                         <button
                           type="button"
-                          onClick={() => setAceActiveTopic("kline_analysis")}
+                          onClick={openKline}
                           className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
                         >
                           {lang === "zh" ? "立即体验" : "Try it"}
@@ -1776,7 +1800,7 @@ plot(slow, color=color.orange, title="MA60")`}</pre>
                           />
                           <div
                             role="listbox"
-                            className="absolute bottom-full left-0 z-20 mb-2 min-w-[112px] p-1 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#161d2b] shadow-lg"
+                            className="absolute bottom-full left-0 z-20 mb-2 min-w-[150px] whitespace-nowrap p-1 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#161d2b] shadow-lg"
                           >
                             {(["fast", "deep"] as const).map((m) => (
                               <button
@@ -1785,8 +1809,16 @@ plot(slow, color=color.orange, title="MA60")`}</pre>
                                 role="option"
                                 aria-selected={aceMode === m}
                                 onClick={() => {
-                                  setAceMode(m);
                                   setAceModeOpen(false);
+                                  if (
+                                    m === "deep" &&
+                                    !membership.requireTier(
+                                      "premium",
+                                      lang === "zh" ? "Ace 深度思考" : "Ace deep research",
+                                    )
+                                  )
+                                    return;
+                                  setAceMode(m);
                                 }}
                                 className={`w-full text-left px-3 py-2 rounded-lg transition-colors cursor-pointer ${
                                   aceMode === m
@@ -1801,6 +1833,11 @@ plot(slow, color=color.orange, title="MA60")`}</pre>
                                   : lang === "zh"
                                     ? "深度思考"
                                     : "Deep research"}
+                                {m === "deep" && membership.tier !== "premium" && membership.tier !== "elite" && (
+                                  <span className="mb-badge is-premium ml-1.5">
+                                    {lang === "zh" ? "高级" : "Premium"}
+                                  </span>
+                                )}
                               </button>
                             ))}
                           </div>
@@ -1808,6 +1845,7 @@ plot(slow, color=color.orange, title="MA60")`}</pre>
                       )}
                     </div>
                   </div>
+                  <QuotaPill compact className="ml-auto mr-2" />
                   <button
                     type="submit"
                     aria-label="发送问题"

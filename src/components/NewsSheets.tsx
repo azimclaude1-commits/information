@@ -21,11 +21,14 @@ export function AiSummarySheet({
   onOpenMarket,
   onToast,
   onClose,
+  onRegenerate,
 }: {
   article: Article;
   onOpenMarket?: (symbol: string) => void;
   onToast?: (s: string) => void;
   onClose: () => void;
+  /** Charges one AI analysis; false when the daily quota is used up. */
+  onRegenerate?: () => boolean;
 }) {
   const [run, setRun] = useState(0);
   const [stage, setStage] = useState(0);
@@ -60,7 +63,13 @@ export function AiSummarySheet({
       footer={
         done ? (
           <>
-            <button className="sh-btn" onClick={() => setRun(run + 1)}>
+            <button
+              className="sh-btn"
+              onClick={() => {
+                if (onRegenerate && !onRegenerate()) return;
+                setRun(run + 1);
+              }}
+            >
               <RefreshCw size={16} />
               重新生成
             </button>

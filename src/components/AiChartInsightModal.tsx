@@ -18,6 +18,8 @@ interface AiChartInsightModalProps {
   instrument: Instrument;
   lang: "zh" | "en";
   onQuickOrder: (side: "buy" | "sell") => void;
+  /** Charges one AI analysis for a regenerated reading; false when the quota is used up. */
+  onRegenerate?: () => boolean;
 }
 
 export const AiChartInsightModal: React.FC<AiChartInsightModalProps> = ({
@@ -26,6 +28,7 @@ export const AiChartInsightModal: React.FC<AiChartInsightModalProps> = ({
   instrument,
   lang,
   onQuickOrder,
+  onRegenerate,
 }) => {
   const [activeTab, setActiveTab] = useState<"overview" | "quant">("overview");
   const [refreshing, setRefreshing] = useState(false);
@@ -59,6 +62,7 @@ export const AiChartInsightModal: React.FC<AiChartInsightModalProps> = ({
   const toY = (val: number) => 220 - ((val - minChart) / range) * 190 - 15;
 
   const triggerRefresh = () => {
+    if (onRegenerate && !onRegenerate()) return;
     setRefreshing(true);
     setTimeout(() => setRefreshing(false), 450);
   };

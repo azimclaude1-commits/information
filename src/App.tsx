@@ -21,6 +21,7 @@ import {
   CandlestickChart,
   ScanLine,
   Newspaper,
+  Crown,
 } from "lucide-react";
 import { INITIAL_INSTRUMENTS, Instrument } from "./data/marketData";
 import { DividendsAndHotView } from "./components/DividendsAndHotView";
@@ -44,6 +45,12 @@ import { SupportCenter } from "./components/SupportCenter";
 import { AuthScreen } from "./components/auth/AuthScreen";
 import { TradingWorkspace } from "./components/TradingWorkspace";
 import {
+  MembershipProvider,
+  TierBadge,
+  useMembershipStore,
+} from "./components/membership/Membership";
+import { MembershipView } from "./components/membership/MembershipView";
+import {
   MarketKind,
   Side,
   marketOf,
@@ -63,7 +70,8 @@ type NavTab =
   | "news"
   | "live"
   | "live-studio"
-  | "withdraw";
+  | "withdraw"
+  | "vip";
 
 const NAV_ITEMS: { id: NavTab; zh: string; en: string }[] = [
   { id: "home", zh: "首页", en: "Home" },
@@ -92,6 +100,7 @@ const ACTIVE_TAB_OF: Record<string, NavTab> = {
   trade: "trade",
   live: "home",
   "live-studio": "withdraw",
+  vip: "withdraw",
   diagnose: "diagnose",
   news: "news",
   flash: "news",
@@ -110,6 +119,7 @@ const ROUTES: NavTab[] = [
   "live",
   "live-studio",
   "withdraw",
+  "vip",
 ];
 
 /** Legacy hashes that now resolve to the merged CFD desk */
@@ -190,6 +200,7 @@ export default function App() {
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   const demo = useDemoTrading(instruments, lang, setToastMsg);
+  const [membership, paywall] = useMembershipStore(lang, setToastMsg);
   const liveStore = useLive(lang, setToastMsg, instruments);
 
   const bySymbol = (symbol: string) =>
@@ -302,11 +313,20 @@ export default function App() {
     setAssetDrawerOpen(false);
   };
 
+  /** 交易台 AI 解读 draws from the shared daily AI quota; reopening the same symbol today is free. */
+  const insightKey = `insight:${aiInstrument.symbol}`;
+  const insightLabel = `${aiInstrument.symbol} ${lang === "zh" ? "AI 解读" : "AI insight"}`;
+  const openAiInsight = () => {
+    if (membership.request("insight", insightKey, insightLabel))
+      setAiInsightModalOpen(true);
+  };
+
   const navLabel = (item: (typeof NAV_ITEMS)[number]) =>
     lang === "zh" ? item.zh : item.en;
 
   return (
     <CommunityProvider live={liveStore} lang={lang}>
+      <MembershipProvider value={membership}>
       <div className={theme === "dark" ? "dark" : ""}>
         {assetDrawerOpen && (
           <AccountPanel
@@ -325,6 +345,10 @@ export default function App() {
             onSupport={() => {
               setAssetDrawerOpen(false);
               setSupportOpen(true);
+            }}
+            onMembership={(path) => {
+              setAssetDrawerOpen(false);
+              membership.open(path);
             }}
             onLogout={() => {
               setAssetDrawerOpen(false);
@@ -387,6 +411,24 @@ export default function App() {
               </nav>
 
               <div className="relative ml-auto flex items-center gap-1 sm:gap-1.5 shrink-0">
+                {isLoggedIn && (
+                  <button
+                    onClick={() => membership.open()}
+                    aria-label={lang === "zh" ? "会员中心" : "Membership"}
+                    className={`mb-head-vip is-${membership.tier} ${
+                      activeNav === "vip" ? "is-active" : ""
+                    }`}
+                  >
+                    {membership.tier === "free" ? (
+                      <>
+                        <Crown className="w-4 h-4 shrink-0" />
+                        <span>{lang === "zh" ? "开通会员" : "Go Premium"}</span>
+                      </>
+                    ) : (
+                      <TierBadge tier={membership.tier} lang={lang} />
+                    )}
+                  </button>
+                )}
                 <button
                   onClick={() => openAssetPage("overview")}
                   className={`ui-btn h-8 px-2.5 sm:px-3 ${
@@ -455,11 +497,18 @@ export default function App() {
                     assetDrawerOpen ? "bg-surface-3" : "hover:bg-surface-3"
                   }`}
                 >
-                  <span className="relative w-7 h-7 rounded-full bg-gradient-to-br from-[#4b84ff] to-[#1f55f0] text-white flex items-center justify-center shrink-0">
+                  <span
+                    className={`mb-ava is-${isLoggedIn ? membership.tier : "free"}`}
+                  >
                     <User className="w-4 h-4" />
-                    {isLoggedIn && (
-                      <span className="absolute -right-0.5 -bottom-0.5 w-3 h-3 rounded-full bg-amber-500 ring-2 ring-surface" />
-                    )}
+                    {isLoggedIn &&
+                      (membership.tier === "free" ? (
+                        <span className="absolute -right-0.5 -bottom-0.5 w-3 h-3 rounded-full bg-amber-500 ring-2 ring-surface" />
+                      ) : (
+                        <i>
+                          <Crown strokeWidth={2.6} />
+                        </i>
+                      ))}
                   </span>
                   <span className="hidden 2xl:block leading-tight">
                     <span className="flex items-center gap-1 text-[12px] font-semibold text-ink">
@@ -471,9 +520,13 @@ export default function App() {
                     </span>
                     <span className="block text-[11px] font-medium text-amber-600 dark:text-amber-400">
                       {isLoggedIn
-                        ? lang === "zh"
-                          ? "模拟账户"
-                          : "Demo account"
+                        ? membership.tier !== "free"
+                          ? lang === "zh"
+                            ? membership.plan.zh
+                            : membership.plan.en
+                          : lang === "zh"
+                            ? "模拟账户"
+                            : "Demo account"
                         : "Email Auth"}
                     </span>
                   </span>
@@ -587,7 +640,7 @@ export default function App() {
                 }
                 lang={lang}
                 theme={theme}
-                onOpenAiModal={() => setAiInsightModalOpen(true)}
+                onOpenAiModal={openAiInsight}
                 onToast={setToastMsg}
                 onOpenAssets={(page = "overview") => openAssetPage(page)}
                 live={
@@ -664,6 +717,13 @@ export default function App() {
                 instruments={instruments}
                 lang={lang}
                 onQuickTrade={handleQuickTradeFromOtherPage}
+              />
+            )}
+
+            {activeNav === "vip" && (
+              <MembershipView
+                lang={lang}
+                onSupport={() => setSupportOpen(true)}
               />
             )}
 
@@ -765,6 +825,11 @@ export default function App() {
             onClose={() => setAiInsightModalOpen(false)}
             instrument={aiInstrument}
             lang={lang}
+            onRegenerate={() =>
+              membership.request("insight", insightKey, insightLabel, {
+                force: true,
+              })
+            }
             onQuickOrder={(side) => {
               const market = marketOf(aiInstrument);
               setTicketSide((old) => ({ ...old, [market]: side }));
@@ -816,8 +881,10 @@ export default function App() {
               setVerifiedPhoneNumber(identity.phone || "");
             }}
           />
+          {paywall}
         </div>
       </div>
+      </MembershipProvider>
     </CommunityProvider>
   );
 }

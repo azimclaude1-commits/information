@@ -19,7 +19,7 @@ import {
 import { Instrument } from "../data/marketData";
 import { AssetLogo } from "./AssetLogo";
 import { MarketChart, type PriceLine } from "./MarketChart";
-import { SignatureIndicators } from "./SignatureIndicators";
+import { SignatureGate } from "./membership/SignatureGate";
 import { MarketDetails, type Alert, type Strategy } from "./MarketDetails";
 import { MobileTradingDesk } from "./MobileTradingDesk";
 import {
@@ -1114,7 +1114,7 @@ export const MarketTerminal: React.FC<Props> = ({
         )}
       </main>
       {isDesktop && (
-        <SignatureIndicators instrument={selected} period={period} lang={lang} />
+        <SignatureGate instrument={selected} period={period} lang={lang} />
       )}
     </>
   );

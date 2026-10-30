@@ -39,6 +39,7 @@ import {
 import { authorId } from "./community/communityState";
 import { NewsComments } from "./community/NewsComments";
 import { AiSummarySheet, ShareSheet } from "./NewsSheets";
+import { useMembership } from "./membership/Membership";
 
 export function NewsDialog({
   title,
@@ -725,6 +726,8 @@ export function HeadlinesView({
   const [tab, setTab] = useState<string>(requested?.category || "精选");
   const [selected, setSelected] = useState(requested?.id || ARTICLES[0].id);
   const [summary, setSummary] = useState(false);
+  /** AI 摘要 counts as one AI analysis per article per day; regenerating counts again. */
+  const membership = useMembership();
   const [reader, setReader] = useState(false);
   const [mobileReading, setMobileReading] = useState(!!requested);
   const [query, setQuery] = useState("");
@@ -933,7 +936,22 @@ export function HeadlinesView({
                 )}{" "}
                 分钟
               </span>
-              <button onClick={() => setSummary(true)}>生成 AI 摘要</button>
+              <button
+                onClick={() => {
+                  if (
+                    membership.request(
+                      "insight",
+                      `news:${current.id}`,
+                      `${current.title.slice(0, 18)} · AI 摘要`,
+                    )
+                  )
+                    setSummary(true);
+                }}
+              >
+                {membership.isUnlocked(`news:${current.id}`)
+                  ? "查看 AI 摘要"
+                  : `生成 AI 摘要 · 剩 ${membership.left} 次`}
+              </button>
             </div>
             <div className="article-prose">
               <p className="article-lead">{current.intro}</p>
@@ -982,6 +1000,14 @@ export function HeadlinesView({
           article={current}
           onOpenMarket={onOpenMarket}
           onClose={() => setSummary(false)}
+          onRegenerate={() =>
+            membership.request(
+              "insight",
+              `news:${current.id}`,
+              `${current.title.slice(0, 18)} · AI 摘要`,
+              { force: true },
+            )
+          }
         />
       )}
       {share && (

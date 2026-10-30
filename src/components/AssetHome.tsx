@@ -16,6 +16,7 @@ import type { Portfolio } from './AssetPortfolio';
 import { AssetLogo } from './AssetLogo';
 import { displaySymbol } from './demoTrading';
 import { ConfirmSheet } from './ui/Sheet';
+import { MemberStrip } from './membership/Membership';
 
 type Lang = 'zh' | 'en';
 type Account = 'trading' | 'funding' | 'reward';
@@ -116,6 +117,8 @@ export function AssetHome({
           ))}
         </div>
       </section>
+
+      <MemberStrip />
 
       <div className="flex items-center gap-6 px-1 pt-2" role="tablist">
         {(

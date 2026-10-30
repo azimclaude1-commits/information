@@ -15,6 +15,7 @@ import {
 import { Instrument } from '../data/marketData';
 import { AssetLogo } from './AssetLogo';
 import { MarketOverviewView } from './MarketOverviewView';
+import { AiLock, QuotaPill, useMembership } from './membership/Membership';
 
 interface AiDiagnoseModalProps {
   instruments: Instrument[];
@@ -65,6 +66,11 @@ export const AiDiagnoseView: React.FC<AiDiagnoseModalProps> = ({
   const [activeBottomTab, setActiveBottomTab] = useState<'quotes' | 'diagnose' | 'flash' | 'indicators'>('quotes');
   const [loading, setLoading] = useState(false);
   const [report, setReport] = useState<DiagnosisReport | null>(null);
+  /** Each report draws one unit from the shared daily AI quota; the same symbol reopens free today. */
+  const membership = useMembership();
+  const keyOf = (inst: Instrument) => `diagnose:${inst.symbol}`;
+  const unlocked = membership.isUnlocked(keyOf(currentInst));
+  const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
     setSearchInput(currentInst.symbol);
@@ -170,8 +176,19 @@ export const AiDiagnoseView: React.FC<AiDiagnoseModalProps> = ({
   };
 
   useEffect(() => {
-    runDiagnosis(currentInst);
+    if (membership.isUnlocked(keyOf(currentInst))) runDiagnosis(currentInst);
+    else setReport(null);
   }, [currentInst.symbol, lang]);
+
+  const generate = (inst: Instrument, force = false) => {
+    const label = `${inst.symbol} ${lang === 'zh' ? 'AI诊股报告' : 'AI diagnosis'}`;
+    if (!membership.request('diagnose', keyOf(inst), label, { force })) return;
+    setGenerating(true);
+    window.setTimeout(() => {
+      runDiagnosis(inst);
+      setGenerating(false);
+    }, membership.delay);
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -181,6 +198,7 @@ export const AiDiagnoseView: React.FC<AiDiagnoseModalProps> = ({
     );
     if (match) {
       onSelectSymbol(match.symbol);
+      generate(match);
     }
   };
 
@@ -279,6 +297,18 @@ export const AiDiagnoseView: React.FC<AiDiagnoseModalProps> = ({
         </div>
 
         {/* AI Overview + Stock Diagnosis Fused Card (Exact Screenshot 2 AI Robot Bubble + 5-Factor Radar Fusion) */}
+        <AiLock
+          locked={!unlocked || generating}
+          busy={generating}
+          title={lang === 'zh' ? `生成 ${currentInst.symbol} AI 诊股报告` : `Generate the ${currentInst.symbol} AI report`}
+          desc={
+            lang === 'zh'
+              ? '五维评分、多空观点、目标止盈与防守止损，以及短线 / 中长期策略建议。'
+              : 'Five-factor score, stance, target and stop levels, and short- and long-term plans.'
+          }
+          cta={lang === 'zh' ? 'AI 诊股 · 消耗 1 次' : 'Run diagnosis · uses 1'}
+          onUnlock={() => generate(currentInst)}
+        >
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
           {/* Left 8 Cols: Screenshot 2 Style AI 解读今日走势 & 下单信息 Card */}
           <div className="lg:col-span-8 ui-card p-4 sm:p-6 flex flex-col justify-between space-y-4">
@@ -299,13 +329,16 @@ export const AiDiagnoseView: React.FC<AiDiagnoseModalProps> = ({
                   </div>
                 </div>
 
-                <button
-                  onClick={() => runDiagnosis(currentInst)}
-                  className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 whitespace-nowrap shrink-0 cursor-pointer"
-                >
-                  <RefreshCw className={`w-3.5 h-3.5 shrink-0 ${loading ? 'animate-spin' : ''}`} />
-                  <span>{lang === 'zh' ? '刷新实时诊断' : 'Refresh AI'}</span>
-                </button>
+                <div className="flex items-center gap-2 shrink-0">
+                  <QuotaPill compact />
+                  <button
+                    onClick={() => generate(currentInst, true)}
+                    className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 whitespace-nowrap shrink-0 cursor-pointer"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 shrink-0 ${loading || generating ? 'animate-spin' : ''}`} />
+                    <span>{lang === 'zh' ? '重新诊断 · 1 次' : 'Re-run · 1 use'}</span>
+                  </button>
+                </div>
               </div>
 
               {/* Main Structured AI Narrative Box (Matching Screenshot 2 Grey Bubble Box) */}
@@ -529,6 +562,7 @@ export const AiDiagnoseView: React.FC<AiDiagnoseModalProps> = ({
             </div>
           </div>
         </div>
+        </AiLock>
 
         {/* Category Filter Tabs (Matching Screenshot 2: 行情 | 深度诊断 | 快讯 | 社区指标) */}
         <div role="tablist" className="ui-tabs ui-tabs-lg border-b border-line">
@@ -681,6 +715,14 @@ export const AiDiagnoseView: React.FC<AiDiagnoseModalProps> = ({
           </div>
         ) : (
           /* 4-Pillar Deep Breakdown Cards */
+          <AiLock
+            locked={!unlocked || generating}
+            busy={generating}
+            title={lang === 'zh' ? '四维机构研报拆解' : '4-pillar breakdown'}
+            desc={lang === 'zh' ? '与诊股报告一起生成，无需额外次数。' : 'Generated with the diagnosis report at no extra cost.'}
+            cta={lang === 'zh' ? 'AI 诊股 · 消耗 1 次' : 'Run diagnosis · uses 1'}
+            onUnlock={() => generate(currentInst)}
+          >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="ui-card p-5">
               <div className="flex items-center justify-between mb-2">
@@ -734,6 +776,7 @@ export const AiDiagnoseView: React.FC<AiDiagnoseModalProps> = ({
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{activeReport.riskWarning}</p>
             </div>
           </div>
+          </AiLock>
         )}
       </div>
     </div>

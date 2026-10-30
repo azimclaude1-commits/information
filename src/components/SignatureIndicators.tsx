@@ -138,11 +138,14 @@ export function SignatureIndicators({
   period,
   lang,
   mobile = false,
+  embedded = false,
 }: {
   instrument: Instrument;
   period: string;
   lang: Lang;
   mobile?: boolean;
+  /** Shown inside the AI analysis dialog: adds the AI conclusion and drops the "below the chart" hint. */
+  embedded?: boolean;
 }) {
   const t: T = (zh, en) => (lang === "zh" ? zh : en);
   const [now] = useState(Date.now);
@@ -216,19 +219,69 @@ export function SignatureIndicators({
   const placed: { x: number; y: number; h: number; bull: boolean }[] = [];
   const lastDiv = obv.labels.at(-1);
 
+  /* ---------- AI 结论 (embedded only): reads the latest bar of the three panes ---------- */
+  const last = bars.length - 1;
+  const bottomHits = res.bottom.filter((c) => c.ok).length,
+    topHits = res.top.filter((c) => c.ok).length;
+  const score =
+    (bars[last].close > box.safe[last] ? 1 : -1) +
+    (lastSignal?.kind === "B" ? 1 : lastSignal ? -1 : 0) +
+    (trio.dif[last] >= trio.dea[last] ? 1 : -1) +
+    (obv.diffUp[last] ? 1 : -1) +
+    (bottomHits >= 3 ? 1 : 0) -
+    (topHits >= 3 ? 1 : 0);
+  const stance = score >= 2 ? "bull" : score <= -2 ? "bear" : "flat";
+  const stanceText = { bull: t("偏多", "Bullish"), bear: t("偏空", "Bearish"), flat: t("震荡", "Range-bound") }[stance];
+  const dec0 = instrument.decimals;
+  const insight = [
+    t(
+      `金眼：价格${bars[last].close > box.safe[last] ? "位于安全线上方" : "位于安全线下方"}（${number(box.safe[last], dec0)}），箱体 ${number(box.boxBottom[last], dec0)} – ${number(box.boxTop[last], dec0)}${lastSignal ? `，最近 ${lastSignal.kind} 信号在 ${ago(lastSignal.index)} 根前` : ""}。`,
+      `Golden Eye: price is ${bars[last].close > box.safe[last] ? "above" : "below"} the safe line (${number(box.safe[last], dec0)}), box ${number(box.boxBottom[last], dec0)} – ${number(box.boxTop[last], dec0)}${lastSignal ? `; last ${lastSignal.kind} ${ago(lastSignal.index)} bars ago` : ""}.`,
+    ),
+    t(
+      `三合一：${histName[trio.state[last]]}，${trio.dif[last] >= trio.dea[last] ? "多头控盘" : "空头控盘"}，RSI24 ${trio.rsi[last].toFixed(1)}；三重底 ${bottomHits}/4、三重顶 ${topHits}/4。`,
+      `Trio: ${histName[trio.state[last]]}, ${trio.dif[last] >= trio.dea[last] ? "bulls in control" : "bears in control"}, RSI24 ${trio.rsi[last].toFixed(1)}; triple-bottom ${bottomHits}/4, triple-top ${topHits}/4.`,
+    ),
+    t(
+      `背离：${obv.diffUp[last] ? "资金流入" : "资金流出"}${lastDiv ? `，${ago(lastDiv.index)} 根前出现 ${lastDiv.tags.join("·")} ${lastDiv.bull ? "底背离" : "顶背离"}` : "，近期无明显背离"}。`,
+      `Divergence: ${obv.diffUp[last] ? "inflow" : "outflow"}${lastDiv ? `; ${lastDiv.tags.join("·")} ${lastDiv.bull ? "bullish" : "bearish"} divergence ${ago(lastDiv.index)} bars ago` : "; no recent divergence"}.`,
+    ),
+  ];
+
   return (
-    <section className={`sig-panel${mobile ? " is-mobile" : ""}`} aria-label={t("特色指标", "Signature indicators")}>
-      <header className="sig-panel-head">
-        <div>
-          <h2>
-            <Sparkles size={16} />
-            {t("特色指标", "Signature indicators")}
-          </h2>
-          <p>
-            {instrument.symbol} · {period} · {t("与上方 K 线同周期，十字光标联动", "Same period as the chart above, linked crosshair")}
-          </p>
+    <section
+      className={`sig-panel${mobile ? " is-mobile" : ""}${embedded ? " is-embedded" : ""}`}
+      aria-label={t("特色指标", "Signature indicators")}
+    >
+      {embedded ? (
+        <div className={`sig-ai is-${stance}`}>
+          <div className="sig-ai-head">
+            <Sparkles size={15} />
+            <b>{t("AI 结论", "AI conclusion")}</b>
+            <span>{stanceText}</span>
+            <small>
+              {instrument.symbol} · {period} · {t("十字光标三图联动", "linked crosshair")}
+            </small>
+          </div>
+          <ul>
+            {insight.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
         </div>
-      </header>
+      ) : (
+        <header className="sig-panel-head">
+          <div>
+            <h2>
+              <Sparkles size={16} />
+              {t("特色指标", "Signature indicators")}
+            </h2>
+            <p>
+              {instrument.symbol} · {period} · {t("与上方 K 线同周期，十字光标联动", "Same period as the chart above, linked crosshair")}
+            </p>
+          </div>
+        </header>
+      )}
 
       <div className="sig-grid">
         {/* 金眼主图 */}
