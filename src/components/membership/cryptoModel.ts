@@ -14,7 +14,7 @@ import {
   type PaidTier,
 } from "./membershipState";
 
-export type CoinId = "USDT" | "USDC" | "ETH" | "BUSD";
+export type CoinId = "USDT" | "USDC" | "ETH";
 export type NetworkId = "tron" | "ethereum" | "bsc" | "polygon" | "arbitrum" | "optimism" | "base" | "solana";
 type Family = "evm" | "tron" | "solana";
 
@@ -58,9 +58,16 @@ export const COINS: Record<CoinId, Coin> = {
   USDT: { id: "USDT", name: "Tether USD", stable: true, decimals: 2, networks: ["tron", "ethereum", "bsc", "polygon", "arbitrum", "optimism", "solana"], color: "#26a17b" },
   USDC: { id: "USDC", name: "USD Coin", stable: true, decimals: 2, networks: ["ethereum", "base", "arbitrum", "optimism", "polygon", "solana", "bsc"], color: "#2775ca" },
   ETH: { id: "ETH", name: "Ether", stable: false, decimals: 6, networks: ["ethereum", "arbitrum", "optimism", "base"], color: "#627eea" },
-  BUSD: { id: "BUSD", name: "Binance USD", stable: true, decimals: 2, networks: ["bsc", "ethereum"], color: "#f0b90b" },
 };
-export const COIN_ORDER: CoinId[] = ["USDT", "USDC", "ETH", "BUSD"];
+export const COIN_ORDER: CoinId[] = ["USDT", "USDC", "ETH"];
+
+/**
+ * Coin details for any stored order. Older saved orders may name a coin that is no longer offered
+ * (BUSD was removed); those still render with neutral defaults instead of crashing.
+ */
+export const coinInfo = (coin: string): Coin =>
+  COINS[coin as CoinId] ?? { id: coin as CoinId, name: coin, stable: true, decimals: 2, networks: [], color: "#8a94a6" };
+export const isOfferedCoin = (coin: string): coin is CoinId => coin in COINS;
 
 /** Payment window and quote lock. */
 export const PAY_WINDOW_MS = 30 * 60_000;
@@ -80,7 +87,7 @@ export const recommendedNetwork = (coin: CoinId): NetworkId =>
 
 /** Amount due in `coin` for `usd`. Stablecoins are 1:1 (rounded up to the cent), ETH uses `ethUsd`. */
 export function quoteAmount(usd: number, coin: CoinId, ethUsd: number) {
-  if (COINS[coin].stable) return Math.ceil(usd * 100 - 1e-6) / 100;
+  if (coinInfo(coin).stable) return Math.ceil(usd * 100 - 1e-6) / 100;
   return Math.ceil((usd / ethUsd) * 1e6 - 1e-6) / 1e6;
 }
 
@@ -209,7 +216,7 @@ export function cryptoProgress(pay: CryptoPayment, now: number) {
   const need = NETWORKS[net].confirmations;
   const received = pay.txs.reduce((s, t) => s + t.amount, 0);
   const confirmed = pay.txs.filter((t) => confirmationsOf(t, net, now) >= need).reduce((s, t) => s + t.amount, 0);
-  const eps = 10 ** -(COINS[pay.coin as CoinId]?.decimals ?? 2) / 2;
+  const eps = 10 ** -coinInfo(pay.coin).decimals / 2;
   return {
     received,
     confirmed,
@@ -256,6 +263,22 @@ export function tickCrypto(state: MembershipState, now: number): MembershipState
     } else if (now > o.crypto.expiresAt && !p.covered) {
       s = patch(s, o.id, { status: "failed", failReason: p.received > 0 ? "underpaid" : "expired" });
     }
+  }
+  return s;
+}
+
+/**
+ * Saved orders that still wait on a coin that is no longer offered (BUSD) move to USDT on the same
+ * network (or USDT's cheapest one) while nothing has been sent. Orders with a transfer already seen
+ * keep their coin and finish normally; paid / failed history is left untouched.
+ */
+export function migrateLegacyCoins(state: MembershipState, now: number): MembershipState {
+  let s = state;
+  for (const o of state.orders) {
+    if (o.status !== "awaiting" || o.method !== "crypto" || !o.crypto || isOfferedCoin(o.crypto.coin)) continue;
+    if (o.crypto.txs.length) continue;
+    const net = o.crypto.network as NetworkId;
+    s = switchCrypto(s, o.id, "USDT", COINS.USDT.networks.includes(net) ? net : recommendedNetwork("USDT"), 0, now);
   }
   return s;
 }

@@ -240,7 +240,11 @@ export function quote(s: MembershipState, tier: PaidTier, now: number): Quote | 
   }
   if (TIER_RANK[tier] < TIER_RANK[current]) return null;
   const left = current === "free" ? 0 : Math.max(0, s.expiresAt - now);
-  const credit = Math.min(price, round2((PLANS[current].price * left) / (PERIOD_DAYS * DAY)));
+  // Credit whole unused days (a started day counts as a full one) so the amount matches the
+  // "N 天折抵" label. Prorating by the millisecond made a plan bought minutes ago worth $9.98,
+  // which surfaced as odd totals such as $10.02 / $79.02.
+  const creditDays = Math.ceil(left / DAY);
+  const credit = Math.min(price, round2((PLANS[current].price * creditDays) / PERIOD_DAYS));
   return {
     tier,
     kind: current === "free" ? "new" : "upgrade",
@@ -249,7 +253,7 @@ export function quote(s: MembershipState, tier: PaidTier, now: number): Quote | 
     total: round2(price - credit),
     periodStart: now,
     periodEnd: now + PERIOD_DAYS * DAY,
-    creditDays: Math.ceil(left / DAY),
+    creditDays,
   };
 }
 

@@ -19,6 +19,7 @@ import {
   seedMembership,
   settleOrder,
   testCardOutcome,
+  type CryptoTx,
   type MembershipState,
   type PaidTier,
 } from "../src/components/membership/membershipState";
@@ -103,6 +104,27 @@ test("upgrades credit the unused days of the current plan", () => {
   assert.equal(quote(elite, "basic", later), null, "no downgrade while a plan is active");
 });
 
+test("upgrade credit counts whole days, so totals have no stray cents", () => {
+  // Basic bought, then renewed once: about 60 days left. A few minutes later the upgrade used to
+  // credit $19.98 (prorated to the millisecond) and show $10.02 / $79.02.
+  const once = buy(seedMembership(now), "basic").state;
+  const twice = buy(once, "basic", now + 60_000).state;
+  const later = now + 5 * 60_000;
+  const premium = quote(twice, "premium", later);
+  const elite = quote(twice, "elite", later);
+  assert.ok(premium && elite);
+  assert.equal(premium.creditDays, 60);
+  assert.equal(premium.credit, 20);
+  assert.equal(premium.total, 10);
+  assert.equal(elite.total, 79);
+  // A started day counts as a full day; the credit always matches creditDays.
+  const q = quote(once, "premium", now + 12.5 * DAY);
+  assert.ok(q);
+  assert.equal(q.creditDays, 18);
+  assert.equal(q.credit, 6);
+  assert.equal(q.total, 24);
+});
+
 test("renewing the same tier extends from the current expiry", () => {
   const first = buy(seedMembership(now), "premium").state;
   const q = quote(first, "premium", now + DAY);
@@ -154,6 +176,7 @@ import {
   cancelCrypto,
   cryptoProgress,
   depositAddress,
+  migrateLegacyCoins,
   networkLabel,
   quoteAmount,
   recommendedNetwork,
@@ -228,8 +251,8 @@ test("coin/network can change before sending; cancel only before sending", () =>
   assert.ok(pay.address.startsWith("0x"));
   assert.equal(state.orders[0].methodLabel, "ETH · Arbitrum One");
   // unsupported network falls back to the cheapest one for the coin
-  state = switchCrypto(state, "VIPC1", "BUSD", "tron", 3000, now + 6);
-  assert.equal(state.orders[0].crypto!.network, "bsc");
+  state = switchCrypto(state, "VIPC1", "ETH", "tron", 3000, now + 6);
+  assert.equal(state.orders[0].crypto!.network, "base");
   const sent = addCryptoTx(state, "VIPC1", tx(5, now + 7), now + 7);
   assert.equal(switchCrypto(sent, "VIPC1", "USDT", "tron", 3000, now + 8), sent);
   assert.equal(cancelCrypto(sent, "VIPC1"), sent);
@@ -246,4 +269,24 @@ test("quotes, labels and addresses", () => {
   assert.notEqual(depositAddress("A", "ethereum"), depositAddress("B", "ethereum"));
   assert.equal(depositAddress("A", "ethereum").length, 42);
   for (const c of Object.values(COINS)) assert.ok(c.networks.length > 0);
+  assert.deepEqual(Object.keys(COINS), ["USDT", "USDC", "ETH"]);
+});
+
+test("saved orders for a withdrawn coin (BUSD) move to USDT before anything is sent", () => {
+  const { state } = startUsdt();
+  const legacy = (o: MembershipState["orders"][number], network = "bsc", txs: CryptoTx[] = []) => ({
+    ...o,
+    methodLabel: "BUSD · BNB Smart Chain (BEP20)",
+    crypto: { ...o.crypto!, coin: "BUSD", network, txs },
+  });
+  const unsent: MembershipState = { ...state, orders: [legacy(state.orders[0])] };
+  const moved = migrateLegacyCoins(unsent, now + 10).orders[0];
+  assert.equal(moved.crypto!.coin, "USDT");
+  assert.equal(moved.crypto!.network, "bsc");
+  assert.equal(moved.crypto!.amount, 30);
+  assert.equal(moved.methodLabel, "USDT · BNB Smart Chain (BEP20)");
+  // A transfer already seen keeps the coin and still completes.
+  const sent: MembershipState = { ...state, orders: [legacy(state.orders[0], "bsc", [tx(30, now + 1000)])] };
+  assert.equal(migrateLegacyCoins(sent, now + 2000), sent);
+  assert.equal(tickCrypto(sent, now + 1000 + CONF_MS * NETWORKS.bsc.confirmations).orders[0].status, "paid");
 });

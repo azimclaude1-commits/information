@@ -37,6 +37,7 @@ import {
   cryptoProgress,
   depositAddress,
   expireCrypto,
+  migrateLegacyCoins,
   startCryptoOrder,
   switchCrypto,
   tickCrypto,
@@ -119,7 +120,8 @@ export function useNow(ms = 1000) {
 
 const read = (): MembershipState => {
   try {
-    return hydrateMembership(JSON.parse(localStorage.getItem(KEY) || "null"), Date.now());
+    const now = Date.now();
+    return migrateLegacyCoins(hydrateMembership(JSON.parse(localStorage.getItem(KEY) || "null"), now), now);
   } catch {
     return seedMembership(Date.now());
   }

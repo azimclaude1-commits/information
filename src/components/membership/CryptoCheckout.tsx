@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  AlertTriangle,
   Check,
   CheckCircle2,
   Clock3,
@@ -17,12 +16,13 @@ import {
 import { ConfirmSheet, SheetRows } from "../ui/Sheet";
 import { Dropdown } from "../ui/Dropdown";
 import {
-  COINS,
   COIN_ORDER,
   NETWORKS,
   QUOTE_LOCK_MS,
+  coinInfo,
   confirmationsOf,
   cryptoProgress,
+  isOfferedCoin,
   networkLabel,
   qrMatrix,
   quoteAmount,
@@ -38,8 +38,8 @@ const tr = (lang: Lang) => (zh: string, en: string) => (lang === "zh" ? zh : en)
 
 /* ---------------- Icons ---------------- */
 
-export function CoinIcon({ coin, size = 28 }: { coin: CoinId; size?: number }) {
-  const c = COINS[coin];
+export function CoinIcon({ coin, size = 28 }: { coin: string; size?: number }) {
+  const c = coinInfo(coin);
   return (
     <span className="cp-coin" style={{ width: size, height: size, background: c.color }} aria-hidden>
       {coin === "ETH" ? (
@@ -48,9 +48,7 @@ export function CoinIcon({ coin, size = 28 }: { coin: CoinId; size?: number }) {
           <path d="M12 17.3 5.5 13.6 12 22l6.5-8.4z" fill="#fff" fillOpacity=".75" />
         </svg>
       ) : (
-        <b style={{ fontSize: size * 0.5, color: coin === "BUSD" ? "#2b2205" : "#fff" }}>
-          {coin === "USDT" ? "₮" : coin === "USDC" ? "$" : "B"}
-        </b>
+        <b style={{ fontSize: size * 0.5, color: "#fff" }}>{coin === "USDT" ? "₮" : coin === "USDC" ? "$" : coin.slice(0, 1)}</b>
       )}
     </span>
   );
@@ -119,7 +117,7 @@ function useCopy() {
 }
 
 const mask = (s: string, head = 8, tail = 6) => (s.length > head + tail + 1 ? `${s.slice(0, head)}…${s.slice(-tail)}` : s);
-const fmtCoin = (v: number, coin: CoinId) => v.toFixed(COINS[coin].decimals);
+const fmtCoin = (v: number, coin: string) => v.toFixed(coinInfo(coin).decimals);
 const mmss = (ms: number) => countdown(ms).slice(3);
 
 /** Address with the first and last six characters emphasised, as wallets do for checking. */
@@ -173,15 +171,16 @@ export function CryptoCheckout({ lang, id, onSupport }: { lang: Lang; id: string
   const label = networkLabel(coin, net);
   const due = sent ? prog.remaining : pay.amount;
 
-  const coinOptions = COIN_ORDER.map((c) => ({
+  // An order saved before a coin was withdrawn keeps showing that coin (it is locked once sent).
+  const coins: CoinId[] = isOfferedCoin(coin) ? COIN_ORDER : [...COIN_ORDER, coin];
+  const coinOptions = coins.map((c) => ({
     value: c,
     icon: <CoinIcon coin={c} size={30} />,
     label: c,
-    sub: `${COINS[c].name} · ≈ ${fmtCoin(quoteAmount(order.total, c, ethUsd()), c)} ${c}`,
-    badge: c === "BUSD" ? t("已停发", "Sunset") : undefined,
-    badgeTone: c === "BUSD" ? ("warn" as const) : undefined,
+    sub: `${coinInfo(c).name} · ≈ ${fmtCoin(quoteAmount(order.total, c, ethUsd()), c)} ${c}`,
   }));
-  const netOptions = COINS[coin].networks.map((n) => ({
+  const nets = coinInfo(coin).networks.length ? coinInfo(coin).networks : [net];
+  const netOptions = nets.map((n) => ({
     value: n,
     icon: <NetIcon net={n} size={30} />,
     label: networkLabel(coin, n),
@@ -218,7 +217,7 @@ export function CryptoCheckout({ lang, id, onSupport }: { lang: Lang; id: string
                 value={coin}
                 options={coinOptions}
                 disabled={sent}
-                onChange={(c) => m.switchCrypto(id, c, COINS[c].networks[0])}
+                onChange={(c) => m.switchCrypto(id, c, coinInfo(c).networks[0] ?? net)}
               />
               <Dropdown
                 label={t("转账网络", "Network")}
@@ -229,17 +228,6 @@ export function CryptoCheckout({ lang, id, onSupport }: { lang: Lang; id: string
                 onChange={(n) => m.switchCrypto(id, coin, n)}
               />
             </div>
-            {coin === "BUSD" && (
-              <div className="sh-note is-warn">
-                <AlertTriangle size={15} />
-                <span>
-                  {t(
-                    "BUSD 发行方已停止增发，部分交易所已不支持 BUSD 提币，建议优先使用 USDT 或 USDC 支付。",
-                    "BUSD is no longer issued and many exchanges no longer support withdrawals. USDT or USDC are recommended.",
-                  )}
-                </span>
-              </div>
-            )}
             {sent && <p className="sh-hint">{t("已检测到转账，本订单的币种和网络已锁定。", "A transfer was detected; coin and network are now locked.")}</p>}
           </section>
 

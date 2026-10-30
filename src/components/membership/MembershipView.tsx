@@ -507,7 +507,7 @@ function Center({ lang, onSupport }: { lang: Lang; onSupport: () => void }) {
           <AcceptedMarks />
           <span className="pay-chip">
             <CryptoMark />
-            <small className="cp-chip-label">USDT · USDC · ETH · BUSD</small>
+            <small className="cp-chip-label">USDT · USDC · ETH</small>
           </span>
         </div>
         <button className="mb-link" onClick={() => setConfirmReset(true)}>
@@ -733,7 +733,7 @@ function Checkout({ lang, tier: initial }: { lang: Lang; tier: PaidTier }) {
                         : pm.id === "google"
                           ? t("使用 Google 账户中的卡片", "Cards saved to your Google account")
                           : pm.id === "crypto"
-                            ? t("USDT · USDC · ETH · BUSD，多链可选", "USDT · USDC · ETH · BUSD on multiple chains")
+                            ? t("USDT · USDC · ETH，多链可选", "USDT · USDC · ETH on multiple chains")
                             : m.state.cards[0]
                             ? t(
                                 `已保存 ${BRAND_NAME[m.state.cards[0].brand]} •••• ${m.state.cards[0].last4}`,
