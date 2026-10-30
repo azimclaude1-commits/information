@@ -37,6 +37,8 @@ import {
 import {
   QuotaPill,
   TierBadge,
+  VipHead,
+  goVip,
   countdown,
   fmtTime,
   tierName,
@@ -46,6 +48,7 @@ import {
   usd,
   usdShort,
 } from "./Membership";
+import { CryptoCheckout, CryptoMark, CryptoResult } from "./CryptoCheckout";
 import {
   AcceptedMarks,
   ApplePayMark,
@@ -59,18 +62,14 @@ import {
 } from "./PaymentSheets";
 
 type Lang = "zh" | "en";
-type Route = { page: "center" | "checkout" | "order" | "orders"; arg?: string };
+type Route = { page: "center" | "checkout" | "order" | "orders" | "crypto"; arg?: string };
 
 const parse = (): Route => {
   const [, page, arg] = window.location.hash.slice(1).split("/");
-  if (page === "checkout" || page === "order" || page === "orders") return { page, arg };
+  if (page === "checkout" || page === "order" || page === "orders" || page === "crypto") return { page, arg };
   return { page: "center" };
 };
-const go = (path: string, replace = false) => {
-  const hash = `#vip${path ? `/${path}` : ""}`;
-  if (replace) window.location.replace(hash);
-  else window.location.hash = hash;
-};
+const go = goVip;
 
 export function MembershipView({ lang, onSupport }: { lang: Lang; onSupport: () => void }) {
   const [route, setRoute] = useState<Route>(parse);
@@ -86,6 +85,8 @@ export function MembershipView({ lang, onSupport }: { lang: Lang; onSupport: () 
     <div className="mb-page">
       {route.page === "checkout" ? (
         <Checkout lang={lang} tier={(PAID_TIERS as string[]).includes(route.arg ?? "") ? (route.arg as PaidTier) : "premium"} />
+      ) : route.page === "crypto" ? (
+        <CryptoCheckout lang={lang} id={route.arg ?? ""} onSupport={onSupport} />
       ) : route.page === "order" ? (
         <OrderDetail lang={lang} id={route.arg ?? ""} onSupport={onSupport} />
       ) : route.page === "orders" ? (
@@ -97,17 +98,7 @@ export function MembershipView({ lang, onSupport }: { lang: Lang; onSupport: () 
   );
 }
 
-function SubHead({ title, onBack, right }: { title: string; onBack: () => void; right?: React.ReactNode }) {
-  return (
-    <header className="mb-subhead">
-      <button className="ui-icon-btn" aria-label="Back" onClick={onBack}>
-        <ArrowLeft size={19} />
-      </button>
-      <h1>{title}</h1>
-      <div>{right}</div>
-    </header>
-  );
-}
+const SubHead = VipHead;
 
 const FEATURE_ICON: Record<AiFeature, React.ElementType> = {
   diagnose: ScanLine,
@@ -514,6 +505,10 @@ function Center({ lang, onSupport }: { lang: Lang; onSupport: () => void }) {
         <div>
           <span>{t("支持的支付方式", "Accepted payments")}</span>
           <AcceptedMarks />
+          <span className="pay-chip">
+            <CryptoMark />
+            <small className="cp-chip-label">USDT · USDC · ETH · BUSD</small>
+          </span>
         </div>
         <button className="mb-link" onClick={() => setConfirmReset(true)}>
           <RefreshCw size={12} />
@@ -571,6 +566,7 @@ const METHODS: { id: PayMethod; zh: string; en: string }[] = [
   { id: "apple", zh: "Apple Pay", en: "Apple Pay" },
   { id: "google", zh: "Google Pay", en: "Google Pay" },
   { id: "card", zh: "信用卡 / 借记卡", en: "Credit / debit card" },
+  { id: "crypto", zh: "数字货币", en: "Crypto" },
 ];
 
 function Checkout({ lang, tier: initial }: { lang: Lang; tier: PaidTier }) {
@@ -588,6 +584,9 @@ function Checkout({ lang, tier: initial }: { lang: Lang; tier: PaidTier }) {
   const [sheet, setSheet] = useState<PayMethod | null>(null);
   const q = m.quote(tier);
   const plan = PLANS[tier];
+  /** Crypto is paid per period, so auto-renew is off while it is selected. */
+  const isCrypto = method === "crypto";
+  const renew = autoRenew && !isCrypto;
 
   const ctx: PayContext | null = q && {
     lang,
@@ -595,11 +594,11 @@ function Checkout({ lang, tier: initial }: { lang: Lang; tier: PaidTier }) {
     price: q.price,
     credit: q.credit,
     total: q.total,
-    renewAt: autoRenew ? q.periodEnd : undefined,
+    renewAt: renew ? q.periodEnd : undefined,
   };
 
   const finish = (methodLabel: string, failReason?: Order["failReason"]) => {
-    const order = m.checkout({ tier, method: sheet ?? method, methodLabel, autoRenew, failReason });
+    const order = m.checkout({ tier, method: sheet ?? method, methodLabel, autoRenew: renew, failReason });
     setSheet(null);
     if (order) go(`order/${order.id}`, true);
   };
@@ -607,6 +606,12 @@ function Checkout({ lang, tier: initial }: { lang: Lang; tier: PaidTier }) {
     if (!q) return;
     if (!agree) {
       setTerms("pay");
+      return;
+    }
+    if (method === "crypto") {
+      // Default to USDT on TRON; the collection page lets the payer switch coin and network.
+      const order = m.startCrypto({ tier, coin: "USDT", network: "tron" });
+      if (order) go(`crypto/${order.id}`);
       return;
     }
     setSheet(method);
@@ -682,15 +687,23 @@ function Checkout({ lang, tier: initial }: { lang: Lang; tier: PaidTier }) {
               <span>
                 <b>{t("连续包月", "Auto-renew monthly")}</b>
                 <small>
-                  {autoRenew
-                    ? t(
-                        `到期自动续费 ${usd(plan.price)}，可随时在会员中心关闭`,
-                        `Renews at ${usd(plan.price)}; cancel any time`,
-                      )
-                    : t("仅购买 1 个月，到期不自动扣款", "One month only, no automatic charge")}
+                  {isCrypto
+                    ? t("数字货币按次支付，不支持连续包月，到期前会提醒你续费", "Crypto is paid per month; we'll remind you before expiry")
+                    : autoRenew
+                      ? t(
+                          `到期自动续费 ${usd(plan.price)}，可随时在会员中心关闭`,
+                          `Renews at ${usd(plan.price)}; cancel any time`,
+                        )
+                      : t("仅购买 1 个月，到期不自动扣款", "One month only, no automatic charge")}
                 </small>
               </span>
-              <button role="switch" aria-checked={autoRenew} className="mb-switch" onClick={() => setAutoRenew(!autoRenew)}>
+              <button
+                role="switch"
+                aria-checked={renew}
+                disabled={isCrypto}
+                className="mb-switch"
+                onClick={() => setAutoRenew(!autoRenew)}
+              >
                 <i />
               </button>
             </div>
@@ -706,6 +719,8 @@ function Checkout({ lang, tier: initial }: { lang: Lang; tier: PaidTier }) {
                       <ApplePayMark size={14} />
                     ) : pm.id === "google" ? (
                       <GooglePayMark size={14} />
+                    ) : pm.id === "crypto" ? (
+                      <CryptoMark />
                     ) : (
                       <CreditCard size={18} />
                     )}
@@ -717,7 +732,9 @@ function Checkout({ lang, tier: initial }: { lang: Lang; tier: PaidTier }) {
                         ? t("Face ID / 触控 ID 一键支付", "Face ID or Touch ID")
                         : pm.id === "google"
                           ? t("使用 Google 账户中的卡片", "Cards saved to your Google account")
-                          : m.state.cards[0]
+                          : pm.id === "crypto"
+                            ? t("USDT · USDC · ETH · BUSD，多链可选", "USDT · USDC · ETH · BUSD on multiple chains")
+                            : m.state.cards[0]
                             ? t(
                                 `已保存 ${BRAND_NAME[m.state.cards[0].brand]} •••• ${m.state.cards[0].last4}`,
                                 `Saved ${BRAND_NAME[m.state.cards[0].brand]} •••• ${m.state.cards[0].last4}`,
@@ -761,7 +778,7 @@ function Checkout({ lang, tier: initial }: { lang: Lang; tier: PaidTier }) {
                   <span>
                     {t("我已阅读并同意", "I agree to the")}
                     <button onClick={() => setTerms("read")}>{t("《会员服务协议》", "Membership Terms")}</button>
-                    {autoRenew && (
+                    {renew && (
                       <>
                         {t("和", " and ")}
                         <button onClick={() => setTerms("read")}>{t("《自动续费规则》", "Auto-renew Rules")}</button>
@@ -882,6 +899,13 @@ function PayButton({ lang, method, total, onClick }: { lang: Lang; method: PayMe
         <span>{t("支付", "")}</span>
       </button>
     );
+  if (method === "crypto")
+    return (
+      <button className="mb-pay is-crypto" onClick={onClick}>
+        <CryptoMark />
+        {t(`数字货币支付 ${usd(total)}`, `Pay ${usd(total)} in crypto`)}
+      </button>
+    );
   return (
     <button className="mb-pay is-card" onClick={onClick}>
       <Lock size={15} />
@@ -896,6 +920,9 @@ const FAIL_TEXT: Record<NonNullable<Order["failReason"]>, [string, string, strin
   card_declined: ["发卡行拒绝了本次交易", "The card issuer declined this payment", "请更换卡片或使用 Apple Pay / Google Pay 支付。", "Try another card, Apple Pay or Google Pay."],
   insufficient_funds: ["卡内可用余额不足", "Insufficient funds on the card", "请确认卡片额度后重试，或更换支付方式。", "Check the card balance or use another method."],
   "3ds_failed": ["银行安全验证未通过", "Bank verification was not completed", "请重新支付并在银行页面完成短信验证。", "Pay again and complete the bank's SMS check."],
+  expired: ["支付已超时", "Payment window expired", "请重新下单。", "Please order again."],
+  underpaid: ["支付金额不足", "Underpaid", "已收款项将原路退回。", "Received funds will be refunded."],
+  cancelled: ["订单已取消", "Order cancelled", "可随时重新下单。", "You can order again any time."],
 };
 
 function OrderDetail({ lang, id, onSupport }: { lang: Lang; id: string; onSupport: () => void }) {
@@ -912,6 +939,8 @@ function OrderDetail({ lang, id, onSupport }: { lang: Lang; id: string; onSuppor
         <p className="mb-empty">{t("没有找到这笔订单", "Order not found")}</p>
       </div>
     );
+  // Crypto orders have their own collection / confirmation states.
+  if (order.method === "crypto" && order.crypto) return <CryptoResult lang={lang} order={order} onSupport={onSupport} />;
   const plan = PLANS[order.tier];
   const elapsed = now - order.createdAt;
   const step =
@@ -1123,7 +1152,21 @@ function Orders({ lang }: { lang: Lang }) {
                 <span className="mb-ol-end">
                   <b>{usd(o.total)}</b>
                   <em className={`is-${o.status}`}>
-                    {o.status === "paid" ? t("已支付", "Paid") : o.status === "failed" ? t("支付失败", "Failed") : t("处理中", "Processing")}
+                    {o.status === "paid"
+                      ? t("已支付", "Paid")
+                      : o.status === "failed"
+                        ? o.failReason === "cancelled"
+                          ? t("已取消", "Cancelled")
+                          : o.failReason === "expired"
+                            ? t("已超时", "Expired")
+                            : o.failReason === "underpaid"
+                              ? t("金额不足", "Underpaid")
+                              : t("支付失败", "Failed")
+                        : o.status === "awaiting"
+                          ? o.crypto?.txs.length
+                            ? t("确认中", "Confirming")
+                            : t("待支付", "Awaiting")
+                          : t("处理中", "Processing")}
                   </em>
                 </span>
                 <ChevronRight size={16} />

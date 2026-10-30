@@ -7,9 +7,33 @@ export type Tier = "free" | "basic" | "premium" | "elite";
 export type PaidTier = Exclude<Tier, "free">;
 /** Every feature that calls the model draws from the same daily pool. */
 export type AiFeature = "diagnose" | "insight" | "kline" | "signature";
-export type PayMethod = "apple" | "google" | "card";
+export type PayMethod = "apple" | "google" | "card" | "crypto";
 export type CardBrand = "visa" | "mastercard" | "amex" | "jcb" | "unionpay" | "unknown";
-export type FailReason = "card_declined" | "insufficient_funds" | "3ds_failed";
+export type FailReason =
+  | "card_declined"
+  | "insufficient_funds"
+  | "3ds_failed"
+  /** crypto: the payment window closed with nothing (or not enough) received */
+  | "expired"
+  | "underpaid"
+  | "cancelled";
+
+/** One on-chain transfer seen for a crypto order. */
+export type CryptoTx = { hash: string; amount: number; at: number; from: string };
+/** Deposit details of a crypto order; the logic lives in `cryptoModel.ts`. */
+export type CryptoPayment = {
+  coin: string;
+  network: string;
+  address: string;
+  /** amount due in `coin` */
+  amount: number;
+  /** USD per coin used for the quote (1 for stablecoins) */
+  rate: number;
+  quotedAt: number;
+  /** payment window end; partial payments after it are refunded */
+  expiresAt: number;
+  txs: CryptoTx[];
+};
 
 export const DAY = 86_400_000;
 export const PERIOD_DAYS = 30;
@@ -60,7 +84,8 @@ export type Order = {
   total: number;
   method: PayMethod;
   methodLabel: string;
-  status: "processing" | "paid" | "failed";
+  /** awaiting = crypto order waiting for a transfer / confirmations */
+  status: "awaiting" | "processing" | "paid" | "failed";
   /** Decided when the payment sheet closes; applied when the order settles. */
   failReason?: FailReason;
   createdAt: number;
@@ -69,6 +94,7 @@ export type Order = {
   periodStart: number;
   periodEnd: number;
   autoRenew: boolean;
+  crypto?: CryptoPayment;
 };
 
 export type SavedCard = {

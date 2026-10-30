@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { Check, Clock3, Crown, Lock, Sparkles, Zap } from "lucide-react";
+import { ArrowLeft, Check, Clock3, Crown, Lock, Sparkles, Zap } from "lucide-react";
 import { Sheet } from "../ui/Sheet";
 import {
   DEEP_TIER,
@@ -31,7 +31,24 @@ import {
   type SavedCard,
   type Tier,
 } from "./membershipState";
+import {
+  addCryptoTx,
+  cancelCrypto,
+  cryptoProgress,
+  depositAddress,
+  expireCrypto,
+  startCryptoOrder,
+  switchCrypto,
+  tickCrypto,
+  txHash,
+  type CoinId,
+  type NetworkId,
+} from "./cryptoModel";
+import { INITIAL_INSTRUMENTS } from "../../data/marketData";
 import "./membership.css";
+
+/** ETH quote source for crypto checkout (the demo feed's reference price). */
+export const ethUsd = () => INITIAL_INSTRUMENTS.find((i) => i.symbol === "ETH/USD")?.price ?? 3200;
 
 type Lang = "zh" | "en";
 const KEY = "alphapulse.membership.v1";
@@ -66,6 +83,13 @@ export type MembershipApi = {
     autoRenew: boolean;
     failReason?: FailReason;
   }) => Order | null;
+  /** Crypto checkout: creates an awaiting order with a deposit address. */
+  startCrypto: (input: { tier: PaidTier; coin: CoinId; network: NetworkId }) => Order | null;
+  switchCrypto: (id: string, coin: CoinId, network: NetworkId) => void;
+  /** Sandbox wallet: sends the remaining amount ("full") or about 60% of it ("partial"). */
+  simulateCrypto: (id: string, kind: "full" | "partial") => void;
+  expireCrypto: (id: string) => void;
+  cancelCrypto: (id: string) => void;
   setAutoRenew: (on: boolean) => void;
   saveCard: (card: SavedCard) => void;
   removeCard: (id: string) => void;
@@ -161,6 +185,28 @@ export function useMembershipStore(lang: Lang, onToast: (text: string) => void):
     return () => window.removeEventListener("storage", sync);
   }, []);
 
+  // Crypto orders: count confirmations and close expired windows while any order is awaiting.
+  const awaiting = state.orders.some((o) => o.status === "awaiting");
+  useEffect(() => {
+    if (!awaiting) return;
+    const tick = () => {
+      const before = latest.current;
+      const next = tickCrypto(before, Date.now());
+      if (next === before) return;
+      const paid = next.orders.find((o) => o.status === "paid" && before.orders.find((b) => b.id === o.id)?.status === "awaiting");
+      commit(next);
+      if (paid)
+        toast.current(
+          lang === "zh"
+            ? `链上确认完成，${PLANS[paid.tier].zh}已开通`
+            : `Payment confirmed on-chain: ${PLANS[paid.tier].en} is active`,
+        );
+    };
+    tick();
+    const id = window.setInterval(tick, 300);
+    return () => window.clearInterval(id);
+  }, [awaiting]);
+
   // Orders left processing (tab closed mid-payment) settle on the next visit; new ones after SETTLE_MS.
   const pending = state.orders.filter((o) => o.status === "processing").map((o) => o.id).join();
   useEffect(() => {
@@ -228,6 +274,32 @@ export function useMembershipStore(lang: Lang, onToast: (text: string) => void):
       commit(made.state);
       return made.order;
     },
+    startCrypto: (input) => {
+      const made = startCryptoOrder(latest.current, { ...input, ethUsd: ethUsd() }, Date.now(), { id: orderId(), txn: uid("TXN") });
+      if (!made) return null;
+      commit(made.state);
+      return made.order;
+    },
+    switchCrypto: (id, coin, network) => commit(switchCrypto(latest.current, id, coin, network, ethUsd(), Date.now())),
+    simulateCrypto: (id, kind) => {
+      const order = latest.current.orders.find((o) => o.id === id);
+      if (!order?.crypto) return;
+      const pay = order.crypto;
+      const left = cryptoProgress(pay, Date.now()).remaining;
+      const dec = pay.coin === "ETH" ? 6 : 2;
+      const amount = kind === "full" ? left : Math.round(left * 0.6 * 10 ** dec) / 10 ** dec;
+      const from = depositAddress(`${id}:sender`, pay.network as NetworkId);
+      commit(
+        addCryptoTx(
+          latest.current,
+          id,
+          { hash: txHash(`${id}:${pay.txs.length}:${Date.now()}`, pay.network as NetworkId), amount, at: Date.now(), from },
+          Date.now(),
+        ),
+      );
+    },
+    expireCrypto: (id) => commit(expireCrypto(latest.current, id, Date.now())),
+    cancelCrypto: (id) => commit(cancelCrypto(latest.current, id)),
     setAutoRenew: (on) => commit(setAutoRenew(latest.current, on)),
     saveCard: (card) => commit(saveCard(latest.current, card)),
     removeCard: (id) => commit(removeCard(latest.current, id)),
@@ -507,5 +579,25 @@ export function MemberStrip() {
       </span>
       <QuotaPill />
     </button>
+  );
+}
+
+/** Navigates inside the member area (`#vip/<path>`); `replace` keeps checkout steps out of history. */
+export const goVip = (path: string, replace = false) => {
+  const hash = `#vip${path ? `/${path}` : ""}`;
+  if (replace) window.location.replace(hash);
+  else window.location.hash = hash;
+};
+
+/** Back header shared by the member-area pages. */
+export function VipHead({ title, onBack, right }: { title: string; onBack: () => void; right?: React.ReactNode }) {
+  return (
+    <header className="mb-subhead">
+      <button className="ui-icon-btn" aria-label="Back" onClick={onBack}>
+        <ArrowLeft size={19} />
+      </button>
+      <h1>{title}</h1>
+      <div>{right}</div>
+    </header>
   );
 }

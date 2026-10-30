@@ -143,3 +143,107 @@ test("card helpers detect brands, Luhn, expiry and sandbox numbers", () => {
   assert.ok(!expiryValid("09/26", now));
   assert.ok(!expiryValid("13/30", now));
 });
+
+/* ---------------- Crypto checkout ---------------- */
+import {
+  CONF_MS,
+  COINS,
+  NETWORKS,
+  PAY_WINDOW_MS,
+  addCryptoTx,
+  cancelCrypto,
+  cryptoProgress,
+  depositAddress,
+  networkLabel,
+  quoteAmount,
+  recommendedNetwork,
+  startCryptoOrder,
+  switchCrypto,
+  tickCrypto,
+} from "../src/components/membership/cryptoModel";
+
+const startUsdt = (s = seedMembership(now)) => {
+  const made = startCryptoOrder(s, { tier: "premium", coin: "USDT", network: "tron", ethUsd: 3200 }, now, { id: "VIPC1", txn: "TXNC1" });
+  assert.ok(made);
+  return made;
+};
+const tx = (amount: number, at: number, hash = `h${amount}${at}`) => ({ hash, amount, at, from: "Tsender" });
+
+test("a crypto order waits for a transfer and has auto-renew off", () => {
+  const { order, state } = startUsdt();
+  assert.equal(order.status, "awaiting");
+  assert.equal(order.autoRenew, false);
+  assert.equal(order.crypto?.amount, 30);
+  assert.ok(order.crypto?.address.startsWith("T"));
+  assert.equal(order.crypto?.expiresAt, now + PAY_WINDOW_MS);
+  assert.equal(state.orders[0].status, "awaiting");
+  assert.equal(tickCrypto(state, now + 1000).orders[0].status, "awaiting");
+});
+
+test("full payment activates the plan once confirmations complete", () => {
+  let { state } = startUsdt();
+  state = addCryptoTx(state, "VIPC1", tx(30, now + 1000), now + 1000);
+  const need = NETWORKS.tron.confirmations;
+  const halfway = tickCrypto(state, now + 1000 + CONF_MS * (need - 1));
+  assert.equal(halfway.orders[0].status, "awaiting");
+  assert.equal(cryptoProgress(halfway.orders[0].crypto!, now + 1000 + CONF_MS * (need - 1)).covered, true);
+  const done = tickCrypto(state, now + 1000 + CONF_MS * need);
+  assert.equal(done.orders[0].status, "paid");
+  assert.equal(done.tier, "premium");
+  assert.equal(done.autoRenew, false);
+});
+
+test("a partial payment waits for the rest, then completes", () => {
+  let { state } = startUsdt();
+  state = addCryptoTx(state, "VIPC1", tx(18, now + 1000), now + 1000);
+  const later = now + 1000 + CONF_MS * 40;
+  state = tickCrypto(state, later);
+  assert.equal(state.orders[0].status, "awaiting");
+  assert.equal(cryptoProgress(state.orders[0].crypto!, later).remaining, 12);
+  state = addCryptoTx(state, "VIPC1", tx(12, later), later);
+  state = tickCrypto(state, later + CONF_MS * 40);
+  assert.equal(state.orders[0].status, "paid");
+});
+
+test("the window closes as expired (nothing sent) or underpaid (partial)", () => {
+  const { state } = startUsdt();
+  const end = now + PAY_WINDOW_MS + 1;
+  assert.equal(tickCrypto(state, end).orders[0].failReason, "expired");
+  const partial = addCryptoTx(state, "VIPC1", tx(10, now + 1000), now + 1000);
+  const closed = tickCrypto(partial, end);
+  assert.equal(closed.orders[0].status, "failed");
+  assert.equal(closed.orders[0].failReason, "underpaid");
+  assert.equal(effectiveTier(closed, end), "free");
+  // A covered payment still confirming is not expired.
+  const covered = addCryptoTx(state, "VIPC1", tx(30, end - 2), end - 2);
+  assert.equal(tickCrypto(covered, end).orders[0].status, "awaiting");
+});
+
+test("coin/network can change before sending; cancel only before sending", () => {
+  let { state } = startUsdt();
+  state = switchCrypto(state, "VIPC1", "ETH", "arbitrum", 3000, now + 5);
+  const pay = state.orders[0].crypto!;
+  assert.equal(pay.coin, "ETH");
+  assert.equal(pay.amount, 0.01);
+  assert.ok(pay.address.startsWith("0x"));
+  assert.equal(state.orders[0].methodLabel, "ETH · Arbitrum One");
+  // unsupported network falls back to the cheapest one for the coin
+  state = switchCrypto(state, "VIPC1", "BUSD", "tron", 3000, now + 6);
+  assert.equal(state.orders[0].crypto!.network, "bsc");
+  const sent = addCryptoTx(state, "VIPC1", tx(5, now + 7), now + 7);
+  assert.equal(switchCrypto(sent, "VIPC1", "USDT", "tron", 3000, now + 8), sent);
+  assert.equal(cancelCrypto(sent, "VIPC1"), sent);
+  assert.equal(cancelCrypto(state, "VIPC1").orders[0].failReason, "cancelled");
+});
+
+test("quotes, labels and addresses", () => {
+  assert.equal(quoteAmount(30, "USDC", 3000), 30);
+  assert.equal(quoteAmount(99, "ETH", 3183.75), 0.031096); // rounded up, never under-quoted
+  assert.equal(networkLabel("USDT", "tron"), "TRON (TRC20)");
+  assert.equal(networkLabel("ETH", "ethereum"), "Ethereum");
+  assert.equal(recommendedNetwork("USDT"), "solana");
+  assert.equal(depositAddress("A", "ethereum"), depositAddress("A", "base"));
+  assert.notEqual(depositAddress("A", "ethereum"), depositAddress("B", "ethereum"));
+  assert.equal(depositAddress("A", "ethereum").length, 42);
+  for (const c of Object.values(COINS)) assert.ok(c.networks.length > 0);
+});
