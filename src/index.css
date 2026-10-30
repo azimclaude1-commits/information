@@ -1,0 +1,753 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans:
+    "Inter Variable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "PingFang SC", "HarmonyOS Sans SC", "MiSans", "Hiragino Sans GB",
+    "Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans SC",
+    "Source Han Sans SC", sans-serif;
+  /* Figures use tabular Inter instead of a code face: prices read like a terminal, not an editor */
+  --font-mono:
+    "Inter Variable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei UI", "Microsoft YaHei",
+    sans-serif;
+  --font-code:
+    ui-monospace, SFMono-Regular, "Cascadia Code", "JetBrains Mono", Menlo,
+    Consolas, monospace;
+
+  /* Brand blue ramp — crisp TradingView-style #2962FF core */
+  --color-blue-50: #eef3ff;
+  --color-blue-100: #dfe8fd;
+  --color-blue-200: #bccdfd;
+  --color-blue-300: #8dabf9;
+  --color-blue-400: #5b88f7;
+  --color-blue-500: #3370f3;
+  --color-blue-600: #2962ff;
+  --color-blue-700: #1e4ee0;
+  --color-blue-800: #1d41ad;
+  --color-blue-900: #1d3a87;
+  --color-blue-950: #152450;
+
+  /* Up — pro-terminal teal green */
+  --color-emerald-400: #22b287;
+  --color-emerald-500: #089981;
+  --color-emerald-600: #057d6a;
+
+  /* Down — pro-terminal red */
+  --color-rose-400: #f7525f;
+  --color-rose-500: #f23645;
+  --color-rose-600: #d52738;
+  --color-rose-700: #b72133;
+
+  --breakpoint-xs: 23.75rem;
+
+  /* Calmer geometry: one card radius, softer elevation */
+  --radius-xl: 0.625rem;
+  --radius-2xl: 0.75rem;
+  --radius-3xl: 1rem;
+
+  --shadow-xs: 0 1px 1px rgb(16 24 40 / 0.04);
+  --shadow-sm: 0 1px 2px rgb(16 24 40 / 0.06), 0 1px 1px rgb(16 24 40 / 0.03);
+  --shadow-md:
+    0 4px 10px -2px rgb(16 24 40 / 0.08), 0 2px 4px -2px rgb(16 24 40 / 0.04);
+  --shadow-lg:
+    0 12px 24px -6px rgb(16 24 40 / 0.12), 0 4px 8px -4px rgb(16 24 40 / 0.05);
+  --shadow-xl: 0 20px 40px -10px rgb(16 24 40 / 0.18);
+}
+
+/* Token-backed colors: `text-ink`, `bg-surface`, `border-line`, `text-up`… follow the active theme */
+@theme inline {
+  --color-canvas: var(--ui-bg);
+  --color-surface: var(--ui-surface);
+  --color-surface-2: var(--ui-surface-2);
+  --color-surface-3: var(--ui-surface-3);
+  --color-line: var(--ui-line);
+  --color-line-2: var(--ui-line-2);
+  --color-ink: var(--ui-ink);
+  --color-ink-2: var(--ui-ink-2);
+  --color-ink-3: var(--ui-ink-3);
+  --color-brand: var(--ui-brand);
+  --color-brand-ink: var(--ui-brand-ink);
+  --color-brand-soft: var(--ui-brand-soft);
+  --color-up: var(--ui-up);
+  --color-down: var(--ui-down);
+  --color-up-soft: var(--ui-up-soft);
+  --color-down-soft: var(--ui-down-soft);
+}
+
+/* ---------- Design tokens ---------- */
+:root {
+  /* Sticky app header: 56px bar + 56px phone tab bar below lg, 56px bar + 32px ticker from lg */
+  --app-header-h: 112px;
+  /* Phone tab bar height, folded into page padding so content never hides behind it */
+  --app-tabbar-h: 56px;
+  --ui-bg: #f3f5f8;
+  --ui-surface: #ffffff;
+  --ui-surface-2: #f7f8fa;
+  --ui-surface-3: #eef0f4;
+  --ui-line: #e6e9ef;
+  --ui-line-2: #d8dce4;
+  --ui-ink: #111827;
+  --ui-ink-2: #4b5466;
+  --ui-ink-3: #8a93a5;
+  --ui-brand: #2962ff;
+  --ui-brand-ink: #1e4ee0;
+  --ui-brand-soft: rgb(41 98 255 / 0.08);
+  --ui-up: #089981;
+  --ui-down: #f23645;
+  --ui-up-soft: rgb(8 153 129 / 0.1);
+  --ui-down-soft: rgb(242 54 69 / 0.1);
+  --ui-warn: #e8930c;
+  --ui-radius: 12px;
+  --ui-shadow: 0 1px 2px rgb(16 24 40 / 0.04);
+  --ui-shadow-hover:
+    0 1px 2px rgb(16 24 40 / 0.04), 0 8px 20px -8px rgb(16 24 40 / 0.14);
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --app-header-h: 88px;
+    --app-tabbar-h: 0px;
+  }
+}
+
+.dark {
+  --ui-bg: #0a0d13;
+  --ui-surface: #111722;
+  --ui-surface-2: #151b27;
+  --ui-surface-3: #1b2230;
+  --ui-line: #1f2735;
+  --ui-line-2: #2a3345;
+  --ui-ink: #e6eaf1;
+  --ui-ink-2: #a9b2c3;
+  --ui-ink-3: #6c778b;
+  --ui-brand: #4d7cff;
+  --ui-brand-ink: #7d9fff;
+  --ui-brand-soft: rgb(77 124 255 / 0.14);
+  --ui-up: #22b287;
+  --ui-down: #f7525f;
+  --ui-up-soft: rgb(34 178 135 / 0.14);
+  --ui-down-soft: rgb(247 82 95 / 0.14);
+  --ui-shadow: 0 1px 2px rgb(0 0 0 / 0.3);
+  --ui-shadow-hover: 0 1px 2px rgb(0 0 0 / 0.3), 0 10px 24px -10px rgb(0 0 0 / 0.6);
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    background-color: var(--ui-bg);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    background-color: var(--ui-bg);
+    color: var(--ui-ink);
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  .dark {
+    background-color: var(--ui-bg);
+    color: var(--ui-ink);
+  }
+
+  ::selection {
+    background: rgb(41 98 255 / 0.18);
+  }
+
+  .font-mono,
+  .tabular-nums {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  pre,
+  code,
+  kbd,
+  samp {
+    font-family: var(--font-code);
+  }
+
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.01em;
+  }
+
+  button:not(:disabled),
+  select:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+
+  :focus-visible {
+    outline-color: var(--ui-brand);
+  }
+}
+
+/* ---------- Shared UI primitives ---------- */
+@layer components {
+  .ui-page {
+    max-width: 1440px;
+    margin-inline: auto;
+    padding: 20px 24px 40px;
+  }
+
+  /* Full-width secondary navigation bar under the app header */
+  .ui-subnav {
+    background: var(--ui-surface);
+    border-bottom: 1px solid var(--ui-line);
+  }
+  .ui-subnav-inner {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 16px;
+    max-width: 1440px;
+    min-height: 48px;
+    margin-inline: auto;
+    padding: 0 24px;
+  }
+
+  .ui-page-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .ui-page-title {
+    font-size: 22px;
+    line-height: 30px;
+    font-weight: 600;
+    color: var(--ui-ink);
+  }
+  .ui-page-desc {
+    margin-top: 2px;
+    font-size: 13px;
+    color: var(--ui-ink-3);
+  }
+
+  .ui-card {
+    background: var(--ui-surface);
+    border: 1px solid var(--ui-line);
+    border-radius: var(--ui-radius);
+    box-shadow: var(--ui-shadow);
+    min-width: 0;
+  }
+
+  .ui-card-hover {
+    transition:
+      border-color 0.15s,
+      box-shadow 0.15s,
+      transform 0.15s;
+  }
+  .ui-card-hover:hover {
+    border-color: var(--ui-line-2);
+    box-shadow: var(--ui-shadow-hover);
+  }
+
+  .ui-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 52px;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--ui-line);
+  }
+
+  .ui-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ui-ink);
+    white-space: nowrap;
+  }
+
+  .ui-eyebrow {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ui-ink-3);
+  }
+
+  /* Underline tabs (card / page headers) */
+  .ui-tabs {
+    display: flex;
+    align-items: stretch;
+    gap: 22px;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .ui-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .ui-tab {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 15px 0 13px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ui-ink-3);
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: color 0.15s;
+  }
+  .ui-tab:hover {
+    color: var(--ui-ink);
+  }
+  .ui-tab[aria-selected="true"] {
+    color: var(--ui-ink);
+    font-weight: 600;
+  }
+  .ui-tab[aria-selected="true"]::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--ui-brand);
+  }
+  .ui-tab-count {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--ui-ink-3);
+  }
+  .ui-tabs-lg .ui-tab {
+    font-size: 15px;
+  }
+
+  /* Segmented control */
+  .ui-seg {
+    display: inline-flex;
+    gap: 2px;
+    padding: 2px;
+    border-radius: 8px;
+    background: var(--ui-surface-3);
+    flex-shrink: 0;
+  }
+  .ui-seg > button {
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 18px;
+    color: var(--ui-ink-3);
+    border-radius: 6px;
+    white-space: nowrap;
+    transition:
+      color 0.15s,
+      background 0.15s;
+  }
+  .ui-seg > button:hover {
+    color: var(--ui-ink);
+  }
+  .ui-seg > button[aria-pressed="true"] {
+    background: var(--ui-surface);
+    color: var(--ui-ink);
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgb(16 24 40 / 0.1);
+  }
+
+  /* Filter chips */
+  .ui-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 28px;
+    padding: 0 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ui-ink-2);
+    border-radius: 999px;
+    border: 1px solid var(--ui-line);
+    background: var(--ui-surface);
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition:
+      color 0.15s,
+      background 0.15s,
+      border-color 0.15s;
+  }
+  .ui-chip:hover {
+    color: var(--ui-ink);
+    border-color: var(--ui-line-2);
+  }
+  .ui-chip[aria-pressed="true"] {
+    color: var(--ui-brand);
+    background: var(--ui-brand-soft);
+    border-color: transparent;
+    font-weight: 600;
+  }
+
+  .ui-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ui-ink-3);
+    white-space: nowrap;
+    transition: color 0.15s;
+  }
+  .ui-link:hover {
+    color: var(--ui-brand);
+  }
+
+  .ui-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    height: 20px;
+    padding: 0 6px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+    border-radius: 4px;
+    white-space: nowrap;
+    background: var(--ui-surface-3);
+    color: var(--ui-ink-2);
+  }
+  .ui-badge-brand {
+    background: var(--ui-brand-soft);
+    color: var(--ui-brand);
+  }
+  .ui-badge-up {
+    background: var(--ui-up-soft);
+    color: var(--ui-up);
+  }
+  .ui-badge-down {
+    background: var(--ui-down-soft);
+    color: var(--ui-down);
+  }
+
+  .ui-up {
+    color: var(--ui-up);
+  }
+  .ui-down {
+    color: var(--ui-down);
+  }
+  .ui-muted {
+    color: var(--ui-ink-3);
+  }
+
+  .ui-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 32px;
+    padding: 0 10px;
+    color: var(--ui-ink-3);
+    background: var(--ui-surface-2);
+    border: 1px solid var(--ui-line);
+    border-radius: 8px;
+    transition:
+      border-color 0.15s,
+      box-shadow 0.15s,
+      background 0.15s;
+  }
+  .ui-input:focus-within {
+    background: var(--ui-surface);
+    border-color: var(--ui-brand);
+    box-shadow: 0 0 0 3px var(--ui-brand-soft);
+  }
+  .ui-input input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    font-size: 13px;
+    color: var(--ui-ink);
+    background: transparent;
+    border: none;
+    outline: none;
+  }
+  .ui-input input::placeholder {
+    color: var(--ui-ink-3);
+  }
+
+  .ui-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ui-ink-2);
+    background: var(--ui-surface);
+    border: 1px solid var(--ui-line);
+    border-radius: 8px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition:
+      color 0.15s,
+      background 0.15s,
+      border-color 0.15s;
+  }
+  .ui-btn:hover {
+    color: var(--ui-ink);
+    background: var(--ui-surface-2);
+    border-color: var(--ui-line-2);
+  }
+  .ui-btn-primary {
+    color: #fff;
+    background: var(--ui-brand);
+    border-color: var(--ui-brand);
+  }
+  .ui-btn-primary:hover {
+    color: #fff;
+    background: var(--ui-brand-ink);
+    border-color: var(--ui-brand-ink);
+  }
+  .ui-btn-soft {
+    color: var(--ui-brand);
+    background: var(--ui-brand-soft);
+    border-color: transparent;
+  }
+  .ui-btn-soft:hover {
+    color: var(--ui-brand);
+    background: color-mix(in srgb, var(--ui-brand) 16%, transparent);
+    border-color: transparent;
+  }
+
+  .ui-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    color: var(--ui-ink-2);
+    border-radius: 8px;
+    flex-shrink: 0;
+    transition:
+      color 0.15s,
+      background 0.15s;
+  }
+  .ui-icon-btn:hover {
+    color: var(--ui-ink);
+    background: var(--ui-surface-3);
+  }
+
+  .ui-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .ui-table th {
+    height: 36px;
+    padding: 0 16px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ui-ink-3);
+    text-align: right;
+    background: var(--ui-surface-2);
+    border-bottom: 1px solid var(--ui-line);
+  }
+  .ui-table td {
+    height: 52px;
+    padding: 0 16px;
+    text-align: right;
+    border-bottom: 1px solid var(--ui-line);
+  }
+  .ui-table th:first-child,
+  .ui-table td:first-child {
+    text-align: left;
+  }
+  .ui-table tbody tr {
+    transition: background 0.12s;
+  }
+  .ui-table tbody tr:hover {
+    background: var(--ui-surface-2);
+  }
+  .ui-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .ui-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 48px 16px;
+    font-size: 13px;
+    color: var(--ui-ink-3);
+    text-align: center;
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (max-width: 767px) {
+    .ui-page {
+      padding: 14px 12px 32px;
+    }
+    .ui-subnav-inner {
+      padding: 0 12px;
+      min-height: 44px;
+    }
+    .ui-page-title {
+      font-size: 20px;
+      line-height: 28px;
+    }
+    .ui-card-head {
+      padding: 0 12px;
+    }
+    .ui-tabs {
+      gap: 18px;
+    }
+    .ui-tab {
+      font-size: 13px;
+      padding: 13px 0 11px;
+    }
+    .ui-tabs-lg .ui-tab {
+      font-size: 14px;
+    }
+    .ui-table th,
+    .ui-table td {
+      padding: 0 12px;
+    }
+  }
+}
+
+/* Sidebar feature article art on the home page (unlayered: must beat news.css) */
+.home-feature-art .editorial-art.large {
+  height: 148px;
+  border-radius: 10px;
+}
+.home-feature-art .editorial-art.large strong {
+  top: 58px;
+  left: 22px;
+  font-size: 22px;
+}
+.home-feature-art .editorial-art.large .art-kicker {
+  left: 22px;
+  top: 36px;
+}
+
+/* Custom thin scrollbars for trading terminal density */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.28);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.5);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.22);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.4);
+}
+
+@keyframes ticker-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.ticker-track {
+  animation: ticker-scroll 90s linear infinite;
+}
+
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes flash-up {
+  0% {
+    background-color: rgba(8, 153, 129, 0.22);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes flash-down {
+  0% {
+    background-color: rgba(242, 54, 69, 0.22);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.animate-flash-up {
+  animation: flash-up 600ms ease-out;
+}
+
+.animate-flash-down {
+  animation: flash-down 600ms ease-out;
+}
+
+@keyframes ui-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ui-fade-in {
+  animation: ui-fade-in 0.22s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track,
+  .ui-fade-in {
+    animation: none;
+  }
+}
+
+/* Keep form controls legible without iOS focus zoom. */
+@media (max-width: 767px) {
+  #root
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not(
+      [type="color"]
+    ),
+  #root textarea,
+  #root select {
+    font-size: 16px;
+  }
+  .hot-page {
+    overflow-wrap: anywhere;
+  }
+}

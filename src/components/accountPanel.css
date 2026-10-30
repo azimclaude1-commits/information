@@ -1,0 +1,178 @@
+.account-panel-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+}
+.account-panel {
+  position: absolute;
+  top: 62px;
+  right: 16px;
+  width: min(360px, calc(100vw - 24px));
+  max-height: calc(100dvh - 76px - var(--app-tabbar-h, 0px));
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--ui-line);
+  border-radius: 16px;
+  background: var(--ui-surface);
+  color: var(--ui-ink);
+  box-shadow:
+    0 16px 50px #101b3430,
+    0 2px 8px #101b3410;
+  animation: account-panel-in 160ms ease-out;
+}
+.account-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  height: 44px;
+  padding: 0 16px;
+  background: var(--ui-surface);
+  border-bottom: 1px solid var(--ui-line);
+}
+.account-panel-header h1 {
+  font-size: 14px;
+  font-weight: 650;
+}
+.account-panel-header button {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  color: var(--ui-ink-3);
+}
+.account-panel-header button:hover {
+  background: var(--ui-surface-2);
+}
+.account-panel-header button svg {
+  width: 17px;
+  height: 17px;
+}
+.account-panel-body {
+  padding: 14px;
+}
+.account-panel-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.account-panel-avatar {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #598bff, #2458e7);
+  color: white;
+}
+.account-panel-avatar svg {
+  width: 25px;
+  height: 25px;
+}
+.account-panel-profile h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 650;
+}
+.account-panel-profile h2 > span {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--ui-brand-soft);
+  color: var(--ui-brand);
+  font-size: 9px;
+}
+.account-panel-profile p,
+.account-panel-profile > div > span {
+  font-size: 10px;
+  color: var(--ui-ink-3);
+  line-height: 1.7;
+}
+.account-panel-body section {
+  margin-bottom: 12px;
+}
+.account-panel-body section > h2 {
+  margin: 0 4px 5px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ui-ink-3);
+}
+.account-panel-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+}
+.account-panel-grid > button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 7px 8px;
+  text-align: left;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+.account-panel-grid > button:hover {
+  background: var(--ui-brand-soft);
+}
+.account-panel-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  color: var(--ui-brand);
+  background: var(--ui-brand-soft);
+}
+.account-panel-icon svg {
+  width: 16px;
+  height: 16px;
+}
+.account-panel-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-top: 1px solid var(--ui-line);
+  padding: 10px 4px 0;
+  font-size: 10px;
+  color: var(--ui-ink-3);
+}
+.account-panel-footer .ui-btn {
+  min-height: 30px;
+  padding: 5px 8px;
+  font-size: 11px;
+}
+.account-panel-footer svg {
+  width: 13px;
+  height: 13px;
+}
+@keyframes account-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (max-width: 39.99rem) {
+  .account-panel {
+    right: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .account-panel {
+    animation: none;
+  }
+}

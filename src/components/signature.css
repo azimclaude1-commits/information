@@ -1,0 +1,345 @@
+/* 特色指标 — panes below the trading chart. Uses the shared --ui-* tokens. */
+.sig-panel {
+  padding: 14px 10px 24px;
+  color: var(--ui-ink);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.sig-panel-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 2px 4px 12px;
+}
+.sig-panel-head h2 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 16px;
+  font-weight: 650;
+}
+.sig-panel-head h2 svg {
+  color: #e5a429;
+}
+.sig-panel-head p {
+  margin-top: 3px;
+  font-size: 12px;
+  color: var(--ui-ink-3);
+}
+.sig-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+}
+.sig-card {
+  min-width: 0;
+  padding: 14px 14px 6px;
+  border: 1px solid var(--ui-line);
+  border-radius: var(--ui-radius, 12px);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow);
+}
+.sig-card-main {
+  grid-column: 1 / -1;
+}
+.sig-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+}
+.sig-title {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  min-width: 0;
+}
+.sig-title h3 {
+  font-size: 14px;
+  font-weight: 650;
+}
+.sig-title small {
+  font-size: 11px;
+  color: var(--ui-ink-3);
+  white-space: nowrap;
+}
+.sig-tag {
+  align-self: center;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--ui-brand-soft);
+  color: var(--ui-brand);
+  font-size: 10px;
+  font-weight: 600;
+}
+.sig-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.sig-chips > span {
+  padding: 2px 8px;
+  border: 1px solid var(--ui-line);
+  border-radius: 999px;
+  background: var(--ui-surface-2);
+  color: var(--ui-ink-2);
+  font-size: 11px;
+  white-space: nowrap;
+}
+.sig-chips > .is-up {
+  color: var(--ui-up);
+  border-color: color-mix(in srgb, var(--ui-up) 35%, transparent);
+  background: var(--ui-up-soft);
+}
+.sig-chips > .is-down {
+  color: var(--ui-down);
+  border-color: color-mix(in srgb, var(--ui-down) 35%, transparent);
+  background: var(--ui-down-soft);
+}
+.sig-chips > .is-warn {
+  color: #c88a12;
+  border-color: #e5a42955;
+  background: #e5a42914;
+}
+.sig-chips > .is-violet {
+  color: #b100e0;
+  border-color: #cc00ff44;
+  background: #cc00ff12;
+}
+.sig-chips > .is-pink {
+  color: #e2577a;
+  border-color: #ff999966;
+  background: #ff99991a;
+}
+.dark .sig-chips > .is-violet {
+  color: #df8bff;
+}
+.sig-readout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 10px 0 2px;
+  font-size: 11px;
+  color: var(--ui-ink-3);
+}
+.sig-readout span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+.sig-readout i {
+  width: 8px;
+  height: 3px;
+  border-radius: 2px;
+}
+.sig-readout b {
+  color: var(--ui-ink);
+  font-weight: 600;
+}
+.sig-pane {
+  width: 100%;
+  touch-action: pan-y;
+  user-select: none;
+}
+.sig-pane svg {
+  display: block;
+  overflow: visible;
+}
+.sig-gridline {
+  stroke: var(--ui-line);
+  stroke-dasharray: 2 4;
+}
+.sig-axis {
+  fill: var(--ui-ink-3);
+  font-size: 10px;
+}
+.sig-cross {
+  stroke: var(--ui-ink-3);
+  stroke-dasharray: 3 3;
+}
+.sig-line {
+  fill: none;
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.sig-dots {
+  stroke-width: 2.4;
+  stroke-dasharray: 0.1 5;
+}
+.sig-up line,
+.sig-up rect {
+  stroke: var(--ui-up);
+  fill: var(--ui-up);
+}
+.sig-down line,
+.sig-down rect {
+  stroke: var(--ui-down);
+  fill: var(--ui-down);
+}
+.sig-last {
+  stroke: var(--ui-brand);
+  stroke-dasharray: 4 3;
+}
+.sig-last-tag {
+  fill: var(--ui-brand);
+}
+.sig-last-text {
+  fill: #fff;
+  font-size: 10px;
+  font-weight: 600;
+}
+.sig-b path,
+.sig-b rect {
+  fill: var(--ui-up);
+}
+.sig-s path,
+.sig-s rect {
+  fill: var(--ui-down);
+}
+.sig-b text,
+.sig-s text {
+  fill: #fff;
+  font-size: 10px;
+  font-weight: 700;
+}
+.sig-add {
+  fill: #eab308;
+  font-size: 11px;
+  paint-order: stroke;
+  stroke: var(--ui-surface);
+  stroke-width: 2px;
+}
+.sig-hl {
+  stroke: var(--ui-ink-3);
+  stroke-opacity: 0.45;
+  stroke-dasharray: 4 4;
+}
+.sig-hl-strong {
+  stroke: #22c55e;
+  stroke-opacity: 0.45;
+}
+.sig-div-bull rect {
+  fill: #089981;
+  fill-opacity: 0.92;
+}
+.sig-div-bear rect {
+  fill: #f23645;
+  fill-opacity: 0.92;
+}
+.sig-div-bull text,
+.sig-div-bear text {
+  fill: #fff;
+  font-size: 8.5px;
+  font-weight: 700;
+}
+.sig-res {
+  display: grid;
+  gap: 6px;
+  margin: 6px 0 4px;
+}
+.sig-res-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: var(--ui-surface-2);
+}
+.sig-res-row > b {
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.sig-res-row em {
+  margin-left: 3px;
+  font-style: normal;
+  color: var(--ui-ink-3);
+}
+.sig-res-row.is-hit.is-bottom {
+  background: var(--ui-up-soft);
+}
+.sig-res-row.is-hit.is-top {
+  background: var(--ui-down-soft);
+}
+.sig-res-row.is-hit.is-bottom em {
+  color: var(--ui-up);
+}
+.sig-res-row.is-hit.is-top em {
+  color: var(--ui-down);
+}
+.sig-res-row ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 10px;
+}
+.sig-res-row li {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  color: var(--ui-ink-3);
+}
+.sig-res-row li svg {
+  padding: 1px;
+  border-radius: 50%;
+  background: var(--ui-line);
+  color: transparent;
+}
+.sig-res-row li.ok {
+  color: var(--ui-ink-2);
+}
+.sig-res-row.is-bottom li.ok svg {
+  background: var(--ui-up);
+  color: #fff;
+}
+.sig-res-row.is-top li.ok svg {
+  background: var(--ui-down);
+  color: #fff;
+}
+.sig-help {
+  margin-top: 4px;
+  border-top: 1px solid var(--ui-line);
+}
+.sig-help summary {
+  padding: 9px 0;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 550;
+  color: var(--ui-brand);
+  list-style-position: inside;
+}
+.sig-help ul {
+  display: grid;
+  gap: 6px;
+  padding: 0 0 12px 16px;
+  list-style: disc;
+  color: var(--ui-ink-2);
+  font-size: 12px;
+  line-height: 1.65;
+}
+.sig-note {
+  margin: 10px 4px 0;
+  font-size: 11px;
+  color: var(--ui-ink-3);
+}
+@media (max-width: 79.99rem) {
+  .sig-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.sig-panel.is-mobile {
+  padding: 14px 10px 12px;
+  border-top: 8px solid var(--ui-surface-2);
+}
+.sig-panel.is-mobile .sig-card {
+  padding: 12px 10px 4px;
+  box-shadow: none;
+}
+.sig-panel.is-mobile .sig-readout {
+  gap: 3px 10px;
+}

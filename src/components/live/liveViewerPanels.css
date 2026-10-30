@@ -1,0 +1,667 @@
+/* Function panels opened from the live room (连麦 / 推荐品种 / 主播介绍 / 规则 / 分享 / 钱包 …). */
+.lv-pn {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px 16px 20px;
+  font-size: 13px;
+}
+.lv-pn-hint,
+.lv-pn-muted {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--ui-ink-3);
+}
+.lv-pn-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--ui-surface-2);
+}
+.lv-pn-status > span {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--ui-surface-3);
+  color: var(--ui-ink-2);
+}
+.lv-pn-status > div {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.lv-pn-status b {
+  font-size: 15px;
+  font-weight: 650;
+}
+.lv-pn-status small {
+  font-size: 12px;
+  color: var(--ui-ink-3);
+}
+.lv-pn-status em {
+  font-style: normal;
+  font-size: 12px;
+  color: var(--ui-ink-3);
+  white-space: nowrap;
+}
+.lv-pn-status.is-on > span {
+  background: var(--ui-up-soft);
+  color: var(--ui-up);
+}
+.lv-pn-status.is-wait > span {
+  background: #e5a4291f;
+  color: #c88a12;
+}
+.lv-pn-status.is-warn > span {
+  background: var(--ui-down-soft);
+  color: var(--ui-down);
+}
+.lv-pn-seats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.lv-pn-seats > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 12px 6px;
+  border: 1px solid var(--ui-line);
+  border-radius: 12px;
+  text-align: center;
+}
+.lv-pn-seats span {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+}
+.lv-pn-seats small {
+  font-size: 11px;
+  color: var(--ui-ink-3);
+}
+.lv-pn-seats .is-host {
+  border-color: #f04e6a73;
+}
+.lv-pn-seats .is-me {
+  border-color: var(--ui-brand);
+  background: var(--ui-brand-soft);
+}
+.lv-pn-seats .is-empty {
+  border-style: dashed;
+  color: var(--ui-ink-3);
+}
+.lv-pn-seats .is-empty i {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--ui-surface-2);
+}
+.lv-pn-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.lv-pn-block h4 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 650;
+}
+.lv-pn-block ol,
+.lv-pn-block ul {
+  display: grid;
+  gap: 6px;
+  padding-left: 18px;
+  color: var(--ui-ink-2);
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+.lv-pn-block ol {
+  list-style: decimal;
+}
+.lv-pn-block ul {
+  list-style: disc;
+}
+.lv-pn-block > p {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--ui-ink-2);
+}
+.lv-pn-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--ui-ink-2);
+}
+.lv-pn-actions {
+  display: flex;
+  gap: 8px;
+}
+.lv-pn-actions .ui-btn {
+  flex: 1;
+  justify-content: center;
+  height: 40px;
+}
+.lv-pn-actions .ui-btn[aria-pressed="true"] {
+  color: var(--ui-brand);
+  background: var(--ui-brand-soft);
+  border-color: transparent;
+}
+.lv-pn-danger {
+  color: var(--ui-down) !important;
+  background: var(--ui-down-soft) !important;
+  border-color: transparent !important;
+}
+.lv-pn-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--ui-surface-2);
+  color: var(--ui-ink);
+  text-align: left;
+}
+.lv-pn-row > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.lv-pn-row b {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 600;
+}
+.lv-pn-row small {
+  font-size: 11px;
+  color: var(--ui-ink-3);
+}
+.lv-pn-row > svg {
+  flex-shrink: 0;
+  color: var(--ui-brand);
+}
+.lv-pn-row .ui-btn {
+  flex-shrink: 0;
+  height: 30px;
+  font-size: 12px;
+}
+.lv-pn-foot {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* 推荐品种 */
+.lv-mk {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--ui-line);
+  border-radius: 14px;
+}
+.lv-mk header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.lv-mk-name {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+.lv-mk header b {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+.lv-mk header b em {
+  padding: 0 5px;
+  border-radius: 4px;
+  background: #f04e6a;
+  color: #fff;
+  font-size: 10px;
+  font-style: normal;
+  line-height: 16px;
+}
+.lv-mk header small {
+  font-size: 11px;
+  color: var(--ui-ink-3);
+}
+.lv-mk-star {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: var(--ui-ink-3);
+}
+.lv-mk-star.is-on {
+  color: #e5a429;
+}
+.lv-mk-price {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-variant-numeric: tabular-nums;
+}
+.lv-mk-price strong {
+  font-size: 22px;
+  font-weight: 650;
+}
+.lv-mk-price span {
+  font-size: 13px;
+  font-weight: 600;
+}
+.lv-mk-price small {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--ui-ink-3);
+}
+.lv-mk-range {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--ui-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.lv-mk-range > div {
+  position: relative;
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--ui-down), var(--ui-line) 50%, var(--ui-up));
+}
+.lv-mk-range i {
+  position: absolute;
+  top: -3px;
+  width: 4px;
+  height: 10px;
+  margin-left: -2px;
+  border-radius: 2px;
+  background: var(--ui-ink);
+}
+.lv-mk-view {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+.lv-mk-view.is-long {
+  background: var(--ui-up-soft);
+  color: var(--ui-up);
+}
+.lv-mk-view.is-short {
+  background: var(--ui-down-soft);
+  color: var(--ui-down);
+}
+.lv-mk-view span {
+  color: var(--ui-ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.lv-mk-trade {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.lv-mk-trade button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 40px;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+}
+.lv-mk-trade b {
+  font-variant-numeric: tabular-nums;
+}
+.lv-mk-trade .is-buy {
+  background: var(--ui-up);
+}
+.lv-mk-trade .is-sell {
+  background: var(--ui-down);
+}
+
+/* 主播介绍 */
+.lv-host-card {
+  display: flex;
+  gap: 14px;
+}
+.lv-host-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 18px;
+  font-weight: 650;
+}
+.lv-host-card h3 svg {
+  color: var(--ui-brand);
+}
+.lv-host-card small {
+  font-size: 11px;
+  color: var(--ui-brand);
+}
+.lv-host-card p {
+  margin-top: 6px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--ui-ink-2);
+}
+.lv-host-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding: 12px 0;
+  border-radius: 14px;
+  background: var(--ui-surface-2);
+  text-align: center;
+}
+.lv-host-stats > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.lv-host-stats b {
+  font-size: 16px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.lv-host-stats span {
+  font-size: 11px;
+  color: var(--ui-ink-3);
+}
+.lv-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.lv-tags span {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--ui-surface-3);
+  color: var(--ui-ink-2);
+  font-size: 12px;
+}
+
+/* Poll card on the stage */
+.lv-poll {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  width: 112px;
+  padding: 8px;
+  border-radius: 12px;
+  background: rgb(41 98 255 / 0.85);
+  color: #fff;
+  text-align: left;
+  box-shadow: 0 10px 24px -12px rgb(0 0 0 / 0.6);
+  backdrop-filter: blur(8px);
+}
+.lv-poll > span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  font-size: 11px;
+  font-weight: 650;
+}
+.lv-poll em {
+  margin-left: auto;
+  font-style: normal;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+}
+.lv-poll b {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.lv-poll small {
+  align-self: stretch;
+  margin-top: 2px;
+  padding: 3px 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #2962ff;
+  font-size: 11px;
+  font-weight: 650;
+  text-align: center;
+}
+
+/* Strategy progress */
+.lx-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 10px 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--ui-surface-2);
+  font-size: 12px;
+  color: var(--ui-ink-3);
+}
+.lx-progress b {
+  color: var(--ui-ink);
+  font-variant-numeric: tabular-nums;
+}
+.lx-track {
+  position: relative;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--ui-down-soft), var(--ui-up-soft));
+}
+.lx-track i {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.lx-track-entry {
+  width: 3px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--ui-ink-3);
+}
+.lx-track-now {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--ui-surface);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--ui-line-2);
+}
+.lx-track-now.is-up {
+  background: var(--ui-up);
+}
+.lx-track-now.is-down {
+  background: var(--ui-down);
+}
+.lx-track-labels {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Notification subscriptions */
+.lx-subs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+}
+.lx-subs h4 {
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 650;
+}
+.lx-subs .lx-row {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--ui-line);
+}
+.lx-subs .ui-btn {
+  flex-shrink: 0;
+  height: 30px;
+  font-size: 12px;
+}
+
+/* Supporters: my rank */
+.live-my-rank {
+  position: sticky;
+  bottom: -18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px -15px -18px;
+  padding: 12px 15px;
+  border-top: 1px solid var(--ui-line);
+  background: var(--ui-surface);
+}
+.live-my-rank-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+.live-my-rank b {
+  font-size: 13px;
+}
+.live-my-rank small {
+  font-size: 11px;
+  color: var(--ui-ink-3);
+}
+.live-my-rank .ui-btn {
+  height: 32px;
+  font-size: 12px;
+}
+
+/* Share */
+.live-share-poster {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  border-radius: 14px;
+  background: #06152d;
+  color: #fff;
+}
+.live-share-poster img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 70% 50%;
+}
+.live-share-poster > div {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 40px 16px 14px;
+  background: linear-gradient(0deg, #06152df2, transparent);
+}
+.live-share-poster h3 {
+  margin-top: 8px;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.live-share-poster p {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #a3b8db;
+}
+.live-share-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 16px 0;
+}
+.live-share-actions button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--ui-ink-2);
+}
+.live-share-actions span {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: var(--ui-surface-3);
+  color: var(--ui-ink);
+}
+.live-share-actions button:hover span {
+  background: var(--ui-brand-soft);
+  color: var(--ui-brand);
+}
+
+/* Wallet */
+.live-wallet-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+.live-wallet-stats > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px;
+  border-radius: 10px;
+  background: var(--ui-surface-2);
+}
+.live-wallet-stats span {
+  font-size: 11px;
+  color: var(--ui-ink-3);
+}
+.live-wallet-stats b {
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+.live-wallet-note {
+  margin: 10px 0 4px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--ui-ink-3);
+}
+.live-wallet-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.live-wallet-head > div {
+  display: flex;
+  gap: 6px;
+}

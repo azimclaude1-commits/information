@@ -1,0 +1,789 @@
+.lx-workspace,
+.lx-interaction {
+  background: var(--ui-surface);
+  border: 1px solid var(--ui-line);
+  border-radius: 14px;
+  min-width: 0;
+  overflow: hidden;
+}
+.lx-workspace {
+  margin-top: 16px;
+}
+.lx-tabs {
+  padding: 0 16px;
+  border-bottom: 1px solid var(--ui-line);
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  scrollbar-width: thin;
+}
+.lx-tabs .ui-tab {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.lx-panel {
+  padding: 18px;
+  min-width: 0;
+}
+.lx-panel > h3,
+.lx-panel > h4 {
+  margin: 12px 0;
+}
+.lx-panel h3,
+.lx-panel h4 {
+  font-weight: 650;
+  color: var(--ui-ink);
+}
+.lx-panel h3 {
+  font-size: 15px;
+}
+.lx-panel h4 {
+  font-size: 13px;
+}
+.lx-panel h3 svg,
+.lx-panel h4 svg {
+  display: inline;
+  vertical-align: middle;
+}
+.lx-panel p {
+  font-size: 13px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.lx-panel small,
+.lx-meta {
+  font-size: 11px;
+  color: var(--ui-ink-3);
+}
+.lx-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.lx-row > div {
+  min-width: 0;
+}
+.lx-row > span {
+  font-size: 12px;
+}
+.lx-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.lx-row .lx-actions {
+  justify-content: flex-end;
+}
+.lx-options {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin: 10px 0 14px;
+}
+.lx-options .ui-chip {
+  font-size: 12px;
+}
+.lx-scroll {
+  max-height: 450px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  min-width: 0;
+}
+.lx-panel > .lx-scroll {
+  margin-top: 12px;
+}
+.lx-full {
+  width: 100%;
+}
+.lx-item,
+.lx-strategy {
+  border: 1px solid var(--ui-line);
+  border-radius: 11px;
+  padding: 15px;
+  margin: 0 0 12px;
+  background: var(--ui-surface);
+}
+.lx-item h4 {
+  margin: 12px 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.lx-item p {
+  margin: 8px 0;
+}
+.lx-item blockquote {
+  font-size: 13px;
+  line-height: 1.75;
+  border-left: 3px solid var(--ui-brand);
+  background: var(--ui-brand-soft);
+  padding: 10px 12px;
+  margin: 12px 0;
+  border-radius: 0 7px 7px 0;
+}
+.lx-item footer {
+  margin-top: 12px;
+}
+.lx-item small {
+  color: var(--ui-ink-3);
+  font-size: 11px;
+}
+.lx-item footer > span {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.lx-strategy > small {
+  display: block;
+  margin-top: 8px;
+}
+.lx-strategy > p {
+  margin: 12px 0;
+}
+.lx-strategy > footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  border-top: 1px solid var(--ui-line);
+  padding-top: 12px;
+  margin-top: 12px;
+}
+.lx-values {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 14px 12px;
+  background: var(--ui-surface-2);
+  border-radius: 8px;
+  margin-top: 14px;
+}
+.lx-values div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.lx-values span {
+  font-size: 11px;
+  color: var(--ui-ink-3);
+}
+.lx-values b {
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+.lx-status {
+  font-size: 10px;
+  line-height: 1.5;
+  white-space: nowrap;
+  padding: 4px 8px;
+  border-radius: 5px;
+  background: var(--ui-brand-soft);
+  color: var(--ui-brand);
+}
+.lx-status.ended,
+.lx-status.expired {
+  background: var(--ui-surface-3);
+  color: var(--ui-ink-3);
+}
+.lx-status.triggered {
+  color: var(--ui-up);
+  background: var(--ui-up-soft);
+}
+.lx-meta span {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.lx-revision {
+  padding: 10px 0;
+  border-top: 1px solid var(--ui-line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 11px;
+}
+.lx-revision small {
+  flex-basis: 100%;
+}
+.lx-strategy details {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--ui-ink-2);
+}
+.lx-strategy summary {
+  cursor: pointer;
+}
+.lx-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.lx-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 12px;
+  color: var(--ui-ink-2);
+}
+.lx-form input:not([type="checkbox"]),
+.lx-form select,
+.lx-form textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--ui-line);
+  background: var(--ui-surface-2);
+  border-radius: 8px;
+  padding: 10px 11px;
+  font: inherit;
+  color: var(--ui-ink);
+  outline: none;
+}
+.lx-form textarea {
+  resize: vertical;
+  min-height: 75px;
+  line-height: 1.6;
+}
+.lx-form input:focus,
+.lx-form select:focus,
+.lx-form textarea:focus {
+  border-color: var(--ui-brand);
+  box-shadow: 0 0 0 2px var(--ui-brand-soft);
+}
+.lx-form .lx-check {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+.lx-check input {
+  accent-color: var(--ui-brand);
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+.lx-form details summary {
+  padding: 10px 0;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.lx-form details > .lx-two,
+.lx-form details > label {
+  margin-bottom: 12px;
+}
+.lx-two,
+.lx-three {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.lx-three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.lx-form small {
+  line-height: 1.6;
+  color: var(--ui-ink-3);
+  font-size: 11px;
+}
+.lx-form > .ui-btn {
+  align-self: flex-end;
+}
+.lx-form > .lx-full {
+  align-self: stretch;
+}
+.lx-interaction .live-chat-card {
+  border: 0;
+  border-radius: 0;
+}
+.lx-interaction > .lx-panel {
+  min-height: 480px;
+}
+.lx-interaction > .lx-panel > .lx-scroll {
+  max-height: 350px;
+}
+.lx-interaction .lx-form {
+  border-top: 1px solid var(--ui-line);
+  padding-top: 14px;
+  margin-top: 10px;
+}
+.lx-interaction .lx-row {
+  flex-wrap: wrap;
+}
+.lx-interaction .lx-item {
+  padding: 12px;
+}
+.lx-interaction > .lx-tabs {
+  padding: 0 12px;
+}
+.lx-interaction > .lx-tabs .ui-tab {
+  font-size: 12px;
+}
+.lx-poll-options {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0;
+}
+.lx-poll-options button {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--ui-line);
+  border-radius: 7px;
+  font-size: 12px;
+  text-align: left;
+  color: var(--ui-ink);
+  background: var(--ui-surface-2);
+}
+.lx-poll-options button i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  z-index: -1;
+  background: var(--ui-brand-soft);
+  transition: width 0.3s;
+}
+.lx-poll-options button span {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.lx-poll-options button.selected {
+  border-color: var(--ui-brand);
+}
+.lx-poll-options button:disabled {
+  cursor: default;
+  opacity: 1;
+}
+.lx-poll-options button:not(:disabled):hover {
+  border-color: var(--ui-brand);
+}
+.lx-onair-question {
+  position: absolute;
+  bottom: 52px;
+  left: 18px;
+  right: 18px;
+  z-index: 5;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: rgba(10, 21, 43, 0.91);
+  border: 1px solid #ffffff24;
+  box-shadow: 0 6px 25px #0003;
+  color: #fff;
+  pointer-events: none;
+}
+.lx-onair-question svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: #a3c0ff;
+}
+.lx-onair-question small {
+  display: block;
+  color: #a3b3ce;
+  font-size: 10px;
+  margin-bottom: 5px;
+}
+.lx-onair-question b {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.lx-event {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--ui-ink-2);
+  font-size: 12px;
+}
+.lx-event > svg {
+  color: var(--ui-brand);
+  flex-shrink: 0;
+}
+.lx-event div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.lx-event b {
+  font-weight: 550;
+}
+.lx-event span {
+  color: var(--ui-ink-3);
+  font-size: 10px;
+}
+.lx-program-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 0 20px;
+}
+.lx-program-head h3 {
+  font-size: 17px;
+  font-weight: 650;
+}
+.lx-program-head span {
+  font-size: 11px;
+  color: var(--ui-ink-3);
+}
+.lx-count {
+  font-size: 10px;
+  min-width: 17px;
+  height: 17px;
+  border-radius: 9px;
+  background: var(--ui-brand);
+  color: white;
+  display: inline-grid;
+  place-items: center;
+}
+.lx-notice {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+  width: 100%;
+  padding: 15px;
+  border-bottom: 1px solid var(--ui-line);
+  font-size: 12px;
+}
+.lx-notice.unread {
+  background: var(--ui-brand-soft);
+}
+.lx-notice small {
+  color: var(--ui-ink-3);
+}
+.lx-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--ui-line);
+  border-radius: 8px;
+  background: var(--ui-surface-2);
+  color: var(--ui-ink-3);
+  margin: 12px 0;
+}
+.lx-search input {
+  min-width: 0;
+  flex: 1;
+  background: transparent;
+  border: 0;
+  outline: none;
+  font-size: 12px;
+  color: var(--ui-ink);
+}
+.lx-chapter {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 3px;
+  border-bottom: 1px solid var(--ui-line);
+  text-align: left;
+}
+.lx-chapter > div {
+  flex: 1;
+  min-width: 0;
+}
+.lx-chapter time {
+  font-size: 12px;
+  color: var(--ui-brand);
+  font-variant-numeric: tabular-nums;
+  background: var(--ui-brand-soft);
+  padding: 6px 8px;
+  border-radius: 5px;
+}
+.lx-chapter strong {
+  font-size: 13px;
+  font-weight: 550;
+}
+.lx-chapter p {
+  margin: 6px 0 0;
+  color: var(--ui-ink-3);
+  font-size: 11px;
+}
+.lx-prewrap {
+  white-space: pre-wrap;
+}
+.lx-cover-preview {
+  width: 160px;
+  max-height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.lx-chapter-editor {
+  max-height: 210px;
+}
+.lx-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 16px 0 22px;
+}
+.lx-metrics > div {
+  background: var(--ui-surface-2);
+  padding: 16px 12px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.lx-metrics small {
+  font-size: 10px;
+  min-height: 26px;
+}
+.lx-metrics strong {
+  font-size: 21px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.lx-bar-row {
+  margin: 16px 0;
+  font-size: 12px;
+}
+.lx-bar-row > div:last-child {
+  background: var(--ui-surface-3);
+  border-radius: 5px;
+  height: 6px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.lx-bar-row i {
+  display: block;
+  background: var(--ui-brand);
+  height: 100%;
+}
+.lx-trade-shade {
+  position: fixed;
+  inset: 0;
+  z-index: 75;
+  background: #0b183124;
+  display: flex;
+  justify-content: flex-end;
+  align-items: stretch;
+  pointer-events: auto;
+}
+.lx-trade-drawer {
+  width: 390px;
+  background: var(--ui-surface);
+  color: var(--ui-ink);
+  padding: 24px;
+  box-shadow: -12px 0 50px #0002;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-left: 1px solid var(--ui-line);
+}
+.lx-trade-drawer > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+.lx-trade-drawer header small {
+  font-size: 10px;
+  color: var(--ui-brand);
+  letter-spacing: 1px;
+}
+.lx-trade-drawer h3 {
+  font-size: 22px;
+  font-weight: 650;
+  margin-top: 4px;
+}
+.lx-trade-drawer .lx-form > .lx-row {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12px;
+}
+.lx-price {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 15px;
+  background: var(--ui-surface-2);
+  border-radius: 10px;
+}
+.lx-price > span {
+  font-size: 11px;
+  color: var(--ui-ink-3);
+}
+.lx-price > b {
+  font-size: 26px;
+  font-variant-numeric: tabular-nums;
+}
+.lx-buy {
+  background: var(--ui-up);
+  color: white;
+  border-color: transparent;
+}
+.lx-sell {
+  background: var(--ui-down);
+  color: white;
+  border-color: transparent;
+}
+.lx-success {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  border-radius: 8px;
+  color: var(--ui-up);
+  background: var(--ui-up-soft);
+  font-size: 13px;
+}
+.lx-floating {
+  position: fixed;
+  bottom: calc(var(--app-tabbar-h, 0px) + 20px);
+  right: 20px;
+  z-index: 65;
+  width: 300px;
+  border: 1px solid var(--ui-line);
+  border-radius: 12px;
+  background: var(--ui-surface);
+  box-shadow: 0 8px 36px #0003;
+  overflow: hidden;
+}
+.lx-floating > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  font-size: 11px;
+}
+.lx-floating > div button:first-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lx-floating video {
+  width: 100%;
+  aspect-ratio: 16/9;
+  display: block;
+  background: #081123;
+}
+.lx-chat-report {
+  font-size: 10px;
+  color: var(--ui-ink-3);
+  margin-top: 4px;
+}
+@media (max-width: 63.999rem) {
+  .lx-workspace {
+    margin-bottom: 16px;
+  }
+  .lx-onair-question {
+    bottom: 45px;
+    left: 10px;
+    right: 10px;
+    padding: 9px 10px;
+  }
+  .lx-onair-question b {
+    font-size: 11px;
+  }
+  .lx-interaction > .lx-panel {
+    min-height: 390px;
+  }
+  .lx-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .lx-interaction .lx-scroll {
+    max-height: 330px;
+  }
+  .lx-panel {
+    padding: 15px;
+  }
+  .lx-row {
+    gap: 8px;
+  }
+  .lx-scroll {
+    max-height: 380px;
+  }
+  .lx-floating {
+    width: 230px;
+    right: 12px;
+    bottom: calc(var(--app-tabbar-h, 0px) + 12px);
+  }
+}
+@media (max-width: 39.999rem) {
+  .lx-trade-shade {
+    align-items: flex-end;
+  }
+  .lx-trade-drawer {
+    width: 100%;
+    max-height: 64dvh;
+    padding: 18px 18px calc(18px + env(safe-area-inset-bottom));
+    border-radius: 18px 18px 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--ui-line);
+  }
+  .lx-trade-drawer > header {
+    margin-bottom: 12px;
+  }
+  .lx-trade-drawer .lx-form {
+    gap: 12px;
+  }
+  .lx-trade-drawer .lx-price {
+    padding: 10px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+  .lx-price > b {
+    font-size: 23px;
+  }
+  .lx-price small {
+    grid-column: 1/-1;
+  }
+  .lx-trade-drawer .ui-seg {
+    min-height: 38px;
+  }
+  .lx-values b {
+    font-size: 13px;
+  }
+  .lx-meta {
+    flex-wrap: wrap;
+  }
+  .lx-tabs {
+    padding: 0 12px;
+  }
+  .lx-workspace .lx-row {
+    flex-wrap: wrap;
+  }
+  .lx-panel > .lx-row {
+    flex-wrap: wrap;
+  }
+  .lx-three {
+    gap: 8px;
+  }
+  .lx-form .lx-three input {
+    padding: 10px 8px;
+  }
+  .lx-item .lx-actions {
+    gap: 6px;
+  }
+  .lx-item .ui-btn {
+    font-size: 11px;
+    padding: 7px 9px;
+  }
+  .lx-program-head {
+    flex-wrap: wrap;
+  }
+  .lx-notice {
+    padding: 14px 8px;
+  }
+  .lx-metrics strong {
+    font-size: 20px;
+  }
+}
+.lx-tabs {
+  overflow-y: hidden;
+}
