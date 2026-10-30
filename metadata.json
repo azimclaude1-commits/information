@@ -1,0 +1,6 @@
+{
+  "name": "AlphaPulse CFD & Quant Terminal",
+  "description": "Institutional-grade multi-asset CFD trading terminal inspired by Mitrade and AICoin, featuring real-time quotes, TradingView drawing toolbar, AI stock diagnosis, dividend radar, interactive live room, and USDT/VIP withdrawal flows.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
