@@ -30,7 +30,7 @@ import {
   type KlineResult,
   type PatternId,
   type Plan,
-} from "./klineAnalysis";
+} from "./klineModel";
 import "./kline.css";
 
 type Lang = "zh" | "en";

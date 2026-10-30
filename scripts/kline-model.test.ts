@@ -8,7 +8,7 @@ import {
   selectionKey,
   type Bar,
   type KlineRecord,
-} from "../src/components/kline/klineAnalysis";
+} from "../src/components/kline/klineModel";
 
 const t0 = Date.UTC(2026, 9, 30, 0, 0);
 /** Bars that follow `path` closes with a small, deterministic wiggle. */

@@ -3,7 +3,7 @@ import { ArrowLeft, Bell, ChevronDown, Crop, Radio, ScanSearch, Star, X } from "
 import type { Instrument } from "../data/marketData";
 import { MarketChart, type ChartView, type PriceLine } from "./MarketChart";
 import { KlineFlow, KlineHistory, KlineResultSheet, periodLabel } from "./kline/KlineAnalysis";
-import type { KlineRecord } from "./kline/klineAnalysis";
+import type { KlineRecord } from "./kline/klineModel";
 import { QuotaPill } from "./membership/Membership";
 import { MarketDetails } from "./MarketDetails";
 import { SignatureGate } from "./membership/SignatureGate";

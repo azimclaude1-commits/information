@@ -1,6 +1,6 @@
 /**
  * K线分析: reads a cropped range of candles and returns structured findings (no text), so records can be
- * shown in either language later. Pure functions only — covered by `scripts/kline-analysis.test.ts`.
+ * shown in either language later. Pure functions only — covered by `scripts/kline-model.test.ts`.
  * Indicators warm up on the bars before the selection; levels, patterns and plans use the selection.
  */
 
