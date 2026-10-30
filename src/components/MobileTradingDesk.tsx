@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Bell, ChevronDown, Radio, Star, X } from "lucide-react";
+import { ArrowLeft, Bell, ChevronDown, Crop, Radio, ScanSearch, Star, X } from "lucide-react";
 import type { Instrument } from "../data/marketData";
-import { MarketChart, type PriceLine } from "./MarketChart";
+import { MarketChart, type ChartView, type PriceLine } from "./MarketChart";
+import { KlineFlow, KlineHistory, KlineResultSheet, periodLabel } from "./kline/KlineAnalysis";
+import type { KlineRecord } from "./kline/klineAnalysis";
+import { QuotaPill } from "./membership/Membership";
 import { MarketDetails } from "./MarketDetails";
 import { SignatureGate } from "./membership/SignatureGate";
 import { displaySymbol, marketOf, type Side } from "./demoTrading";
@@ -20,13 +23,15 @@ type Props = {
   live?: React.ReactNode;
   priceLines?: PriceLine[];
   onTradeSide?: (side: Side) => void;
+  /** Switches the desk to another symbol (K线分析 records can belong to other instruments). */
+  onSelectSymbol?: (symbol: string) => void;
   onToast: (text: string) => void;
   onOpenAi: () => void;
   alertOpen: boolean;
   onAlert: () => void;
   onCloseAlert: () => void;
 };
-type Pane = "trade" | "chart" | "data" | "news" | "agent" | "live";
+type Pane = "trade" | "chart" | "data" | "news" | "agent" | "live" | "kline";
 
 export function MobileTradingDesk({
   instrument: i,
@@ -41,6 +46,7 @@ export function MobileTradingDesk({
   live,
   priceLines,
   onTradeSide,
+  onSelectSymbol,
   onToast,
   onOpenAi,
   alertOpen,
@@ -52,6 +58,10 @@ export function MobileTradingDesk({
   const [dataTab, setDataTab] = useState("data");
   const [period, setPeriod] = useState("15m");
   const [template, setTemplate] = useState<{ id: number; kind: string }>();
+  /** Candles on screen in the 图表 pane; the K线分析 crop page starts from them. */
+  const view = useRef<ChartView | null>(null);
+  const [klineOpen, setKlineOpen] = useState(false);
+  const [klineRecord, setKlineRecord] = useState<KlineRecord | null>(null);
   const picker = useRef<HTMLDivElement>(null);
   const closePicker = useRef(onPicker);
   closePicker.current = onPicker;
@@ -99,6 +109,16 @@ export function MobileTradingDesk({
     onTradeSide?.(side);
     changePane("trade");
   };
+  const tradeFromRecord = (rec: KlineRecord, side: Side) => {
+    if (rec.symbol !== i.symbol) onSelectSymbol?.(rec.symbol);
+    setKlineOpen(false);
+    setKlineRecord(null);
+    openTrade(side);
+  };
+  const onScreen =
+    view.current && view.current.symbol === i.symbol && view.current.period === period
+      ? view.current.end - view.current.start
+      : 40;
   const range = Math.max(
     0,
     Math.min(
@@ -205,13 +225,18 @@ export function MobileTradingDesk({
             ["data", "数据", "Data"],
             ["news", "信息", "News"],
             ["agent", "Agent 策略", "Agent"],
+            ["kline", "K线分析", "Chart AI"],
           ] as const
         ).map(([id, zh, en]) => (
           <button
             key={id}
             role="tab"
             aria-selected={pane === id}
-            onClick={() => changePane(id)}
+            className={id === "kline" ? "mt-tab-ai" : undefined}
+            onClick={() => {
+              changePane(id);
+              if (id === "kline") setKlineOpen(true);
+            }}
           >
             {t(zh, en)}
           </button>
@@ -236,6 +261,7 @@ export function MobileTradingDesk({
               priceLines={priceLines}
               template={template}
               onTemplateApplied={() => setTemplate(undefined)}
+              onView={(v) => (view.current = v)}
             />
           </div>
           <SignatureGate instrument={i} period={period} lang={lang} mobile />
@@ -300,6 +326,58 @@ export function MobileTradingDesk({
         }}
       />
       {pane === "live" && <div className="mt-live-panel">{live}</div>}
+      {pane === "kline" && (
+        <section className="mt-kline-pane" aria-label={t("K线分析", "Chart analysis")}>
+          <div className="mt-kline-start">
+            <span className="mt-kline-icon">
+              <ScanSearch size={20} />
+            </span>
+            <div>
+              <b>{t("框选 K 线 · AI 读图", "Select candles · AI reading")}</b>
+              <p>
+                {t(
+                  "自动选中图表当前屏幕的 K 线，可拖动裁剪框调整范围，确认后生成形态、支撑阻力和交易计划。",
+                  "Starts from the candles on screen; drag the crop box to adjust, then get patterns, levels and trade plans.",
+                )}
+              </p>
+              <small>
+                {i.symbol} · {periodLabel(period, lang)} · {t(`当前屏幕 ${onScreen} 根`, `${onScreen} on screen`)}
+              </small>
+            </div>
+            <div className="mt-kline-cta">
+              <button onClick={() => setKlineOpen(true)}>
+                <Crop size={15} />
+                {t("开始框选", "Select")}
+              </button>
+              <QuotaPill compact />
+            </div>
+          </div>
+          <KlineHistory lang={lang} symbol={i.symbol} onOpen={setKlineRecord} />
+        </section>
+      )}
+      {klineOpen && (
+        <KlineFlow
+          instrument={i}
+          period={period}
+          view={view.current}
+          source="desk"
+          lang={lang}
+          onClose={() => setKlineOpen(false)}
+          onTrade={tradeFromRecord}
+          onHistory={() => {
+            setKlineOpen(false);
+            changePane("kline");
+          }}
+        />
+      )}
+      {klineRecord && (
+        <KlineResultSheet
+          record={klineRecord}
+          lang={lang}
+          onClose={() => setKlineRecord(null)}
+          onTrade={tradeFromRecord}
+        />
+      )}
       {pickerOpen && (
         <div
           className="mt-picker-overlay"

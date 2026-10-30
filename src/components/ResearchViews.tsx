@@ -74,6 +74,7 @@ export function ResearchView({
           onChangeView={(v) => onTabChange(v as ResearchTab)}
           onOpenAiOverviewWithSymbol={diagnose}
           onQuickTrade={diagnose}
+          onTrade={onQuickTrade}
           onNavigateTab={onNavigate}
         />
       )}

@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { QuotaPill, useMembership } from "./membership/Membership";
+import { KlineWorkspace } from "./kline/KlineAnalysis";
 import {
   Search,
   Flame,
@@ -67,36 +68,6 @@ function KlineSnapshot({ instrument }: { instrument: Instrument }) {
   );
 }
 
-/** Key levels for the two range-trading plans, derived from the instrument's 24H band */
-const klineLevels = (inst: Instrument) => {
-  const dp = Math.min(inst.decimals, 2);
-  const f = (v: number) =>
-    v.toLocaleString("en-US", { minimumFractionDigits: dp, maximumFractionDigits: dp });
-  const range = Math.max(inst.high24h - inst.low24h, inst.price * 0.004);
-  const mid = inst.low24h + range / 2;
-  return {
-    f,
-    range: f(range),
-    high: f(inst.high24h),
-    low: f(inst.low24h),
-    last: f(inst.price),
-    pct: `${inst.changePercent24h >= 0 ? "+" : ""}${inst.changePercent24h.toFixed(2)}%`,
-    up: inst.changePercent24h >= 0,
-    sell: {
-      entry: f(inst.high24h - range * 0.05),
-      stop: f(inst.high24h + range * 0.03),
-      target: f(mid),
-      invalid: f(inst.high24h + range * 0.05),
-    },
-    buy: {
-      entry: f(inst.low24h + range * 0.05),
-      stop: f(inst.low24h - range * 0.03),
-      target: f(mid + range * 0.12),
-      invalid: f(inst.low24h - range * 0.05),
-    },
-  };
-};
-
 const ACE_PROMPTS: {
   id: string;
   zh: string;
@@ -139,209 +110,6 @@ const ACE_PROMPTS: {
   },
 ];
 
-/** AI 解读K线 result: snapshot rail + the three-part reading with two range plans */
-function KlineReading({
-  inst,
-  lang,
-}: {
-  inst: Instrument;
-  lang: "zh" | "en";
-}) {
-  const [copied, setCopied] = useState(false);
-  const t = (zh: string, en: string) => (lang === "zh" ? zh : en);
-  const lv = klineLevels(inst);
-  const coin = inst.symbol.split("/")[0];
-  const stamp = new Date().toLocaleString("zh-CN", {
-    month: "numeric",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
-  const plan = (
-    title: string,
-    p: { entry: string; stop: string; target: string; invalid: string },
-    basis: string,
-  ) => (
-    <div className="space-y-1.5">
-      <div className="font-semibold text-slate-900 dark:text-white">{title}</div>
-      <ul className="space-y-1.5 list-disc pl-5">
-        <li>
-          <b className="font-semibold">{t("进场区域", "Entry")}</b>:{" "}
-          <span className="text-indigo-600 dark:text-indigo-400 underline decoration-indigo-300 underline-offset-2">
-            {p.entry}
-          </span>{" "}
-          USDT
-        </li>
-        <li>
-          <b className="font-semibold">{t("止损价位", "Stop")}</b>:{" "}
-          <span className="text-indigo-600 dark:text-indigo-400 underline decoration-indigo-300 underline-offset-2">
-            {p.stop}
-          </span>{" "}
-          USDT
-        </li>
-        <li>
-          <b className="font-semibold">{t("目标区域", "Target")}</b>:{" "}
-          <span className="text-indigo-600 dark:text-indigo-400 underline decoration-indigo-300 underline-offset-2">
-            {p.target}
-          </span>{" "}
-          USDT
-        </li>
-        <li>
-          <b className="font-semibold">{t("策略依据", "Basis")}</b>: {basis}
-        </li>
-        <li>
-          <b className="font-semibold">{t("策略失效情景", "Invalidation")}</b>:{" "}
-          {t("若价格突破", "Breaks")} {p.invalid} USDT，{t("则策略失效。", "the plan is void.")}
-        </li>
-      </ul>
-    </div>
-  );
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-[180px_minmax(0,1fr)] gap-5">
-      <aside className="space-y-3">
-        <div className="text-xs font-semibold text-slate-900 dark:text-white">
-          {t("图表快照", "Chart snapshot")}
-        </div>
-        <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111722] p-2">
-          <div className="h-[104px]">
-            <KlineSnapshot instrument={inst} />
-          </div>
-          <div className="mt-1.5 text-[11px] text-slate-500">
-            {coin} · {t("主图 · 4时", "Main · 4H")}
-          </div>
-        </div>
-      </aside>
-
-      <div className="space-y-6">
-        <div>
-          <h3 className="text-center text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
-            {t("【", "[")}
-            {coin}·{t("4时", "4H")}
-            {t("】", "] ")}
-            {t("K线解读", "AI candle reading")}
-          </h3>
-          <div className="mt-2 text-xs text-slate-500">
-            {t("解读时间", "Read at")}: {stamp} · {t("周期", "frame")} 4H ·{" "}
-            {t("最新", "last")} {lv.last} ({lv.pct})
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <h4 className="font-semibold text-slate-900 dark:text-white">
-            {t("一、整体分析", "1 · Overall read")}
-          </h4>
-          <p>
-            {t(
-              `近 24 小时价格在 ${lv.low} — ${lv.high} 之间震荡，振幅 ${lv.range}，当前报 ${lv.last}，日内${lv.up ? "偏强" : "偏弱"}。前期经历一轮快速${lv.up ? "上涨" : "下跌"}后，行情进入高位${lv.up ? "换手" : "调整"}阶段，单根 K 线不足以判断趋势反转。`,
-              `Price churned between ${lv.low} and ${lv.high} over the last 24H (range ${lv.range}), now ${lv.last}. After the ${lv.up ? "rally" : "slide"} the market is ${lv.up ? "digesting" : "consolidating"} — one bar is not a trend call.`,
-            )}
-          </p>
-          <ul className="list-disc pl-5 space-y-1">
-            <li>
-              {t(
-                "短期来看，若不跌破日内低点可继续持有观察；跌破则等待企稳再介入。",
-                "Short term: hold while the intraday low holds; otherwise wait for a base.",
-              )}
-            </li>
-            <li>
-              {t(
-                "长期需关注灰度与资金流动态，介入后可能出现反弹或二次探底。",
-                "Longer term: watch flows — a bounce or a second test are both live.",
-              )}
-            </li>
-          </ul>
-        </div>
-
-        <div className="space-y-2">
-          <h4 className="font-semibold text-slate-900 dark:text-white">
-            {t("二、技术指标", "2 · Indicators")}
-          </h4>
-          <ul className="list-disc pl-5 space-y-1">
-            <li>
-              {t(
-                `K 线自近期高点 ${lv.high} 一带回落，短期呈现${lv.up ? "震荡上行" : "震荡下行"}结构。`,
-                `Candles pulled back from the ${lv.high} area — a ${lv.up ? "rising" : "fading"} chop.`,
-              )}
-            </li>
-            <li>
-              {t(
-                "MA20 与 MA60 在高位接近交叉，表明短线多空仍在争夺。",
-                "MA20 and MA60 are converging near the highs — the short-term trend is contested.",
-              )}
-            </li>
-            <li>
-              {t(
-                "EMA 均线开口收窄，量能未明显放大，追涨杀跌的胜率偏低。",
-                "EMA fan is tightening and volume is flat, so chasing breakouts has poor odds.",
-              )}
-            </li>
-          </ul>
-        </div>
-
-        <div className="space-y-4">
-          <h4 className="font-semibold text-slate-900 dark:text-white">
-            {t("三、策略建议与关键点位", "3 · Plans and key levels")}
-          </h4>
-          <p>
-            {t(
-              "综合以上分析，给出两套区间交易预案，请结合自身风险偏好参考。",
-              "Two range plans follow — apply your own risk appetite.",
-            )}
-          </p>
-          {plan(
-            t("策略一：【震荡 - 高抛】", "Plan 1 · sell the range high"),
-            lv.sell,
-            t(
-              `价格接近 ${lv.high} 阻力位，上行压力明显，因此在阻力附近布局空单是顺应现状的选择。`,
-              `Price is pressing into ${lv.high} resistance, so shorting near it follows the tape.`,
-            ),
-          )}
-          {plan(
-            t("策略二：【震荡 - 低吸】", "Plan 2 · buy the range low"),
-            lv.buy,
-            t(
-              `价格在 ${lv.low} 支撑位附近形成买盘承接，因此在支撑附近布局多单为顺应当前结构。`,
-              `Bids keep defending ${lv.low}, so going long near support follows structure.`,
-            ),
-          )}
-        </div>
-
-        <div className="flex items-start gap-2 p-3.5 rounded-xl bg-slate-50 dark:bg-[#111722] border border-slate-200 dark:border-slate-800 text-xs leading-6 text-slate-500">
-          <ShieldCheck className="w-4 h-4 shrink-0 mt-1 text-indigo-500" />
-          <p>
-            <b className="font-semibold text-slate-700 dark:text-slate-300">
-              {t("免责声明", "Disclaimer")}
-            </b>{" "}
-            {t(
-              "本内容由 AI 基于多维数据源生成，所有内容仅供参考，不构成任何投资建议。市场有风险，投资需谨慎，请您结合实际情况独立决策。",
-              "AI-generated from multiple data sources for reference only; not investment advice. Decide independently.",
-            )}
-          </p>
-        </div>
-
-        <div className="flex items-center justify-center">
-          <button
-            type="button"
-            onClick={() => {
-              navigator.clipboard
-                ?.writeText(
-                  `${coin} 4H read · last ${lv.last} (${lv.pct}) · range ${lv.low}-${lv.high} · sell ${lv.sell.entry}/stop ${lv.sell.stop}/target ${lv.sell.target} · buy ${lv.buy.entry}/stop ${lv.buy.stop}/target ${lv.buy.target}`,
-                )
-                .catch(() => {});
-              setCopied(true);
-            }}
-            className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-sm font-semibold"
-          >
-            <Share2 className="w-4 h-4" />
-            {copied ? t("已复制到剪贴板", "Copied") : t("一键分享", "Share")}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 interface MarketOverviewViewProps {
   view?: OverviewSubTab;
   hideNavigation?: boolean;
@@ -352,6 +120,8 @@ interface MarketOverviewViewProps {
   lang: "zh" | "en";
   onOpenAiOverviewWithSymbol: (symbol: string) => void;
   onQuickTrade: (symbol: string, side: "buy" | "sell") => void;
+  /** Opens the trading desk with a side (K线分析 plans). */
+  onTrade?: (symbol: string, side: "buy" | "sell") => void;
   onNavigateTab: (tab: any) => void;
 }
 
@@ -362,6 +132,7 @@ export const MarketOverviewView: React.FC<MarketOverviewViewProps> = ({
   lang,
   onOpenAiOverviewWithSymbol,
   onQuickTrade,
+  onTrade,
   onNavigateTab,
   view,
   hideNavigation = false,
@@ -385,8 +156,18 @@ export const MarketOverviewView: React.FC<MarketOverviewViewProps> = ({
   );
 
   // Ace智搜 state (Screenshot 2)
-  const [aceActiveTopic, setAceActiveTopic] =
-    useState<string>("usd_confidence");
+  // `#diagnose/ace/kline` opens K线分析 directly (used by the trading desk's 全部分析记录).
+  const [aceActiveTopic, setAceActiveTopic] = useState<string>(() =>
+    window.location.hash.split("/")[2] === "kline" ? "kline_analysis" : "usd_confidence",
+  );
+  useEffect(() => {
+    const sync = () => {
+      const parts = window.location.hash.slice(1).split("/");
+      if (parts[1] === "ace" && parts[2] === "kline") setAceActiveTopic("kline_analysis");
+    };
+    window.addEventListener("hashchange", sync);
+    return () => window.removeEventListener("hashchange", sync);
+  }, []);
   const [aceInput, setAceInput] = useState<string>("");
   const [aceMode, setAceMode] = useState<"fast" | "deep">("fast");
   const [aceModeOpen, setAceModeOpen] = useState(false);
@@ -399,19 +180,9 @@ export const MarketOverviewView: React.FC<MarketOverviewViewProps> = ({
     instruments.find((i) => i.category === "crypto") ??
     instruments[0];
 
-  /** Ace questions and the K-line reading draw from the shared daily AI quota. */
+  /** Ace questions draw from the shared daily AI quota; K线分析 charges when an analysis is confirmed. */
   const membership = useMembership();
-  const klineKey = `kline:${klineInst.symbol}`;
-  const openKline = () => {
-    if (
-      membership.request(
-        "kline",
-        klineKey,
-        `${klineInst.symbol} ${lang === "zh" ? "K线分析" : "chart analysis"}`,
-      )
-    )
-      setAceActiveTopic("kline_analysis");
-  };
+  const openKline = () => setAceActiveTopic("kline_analysis");
 
   // 热门榜单 filter state (Screenshot 3)
   const [hotListFilter, setHotListFilter] = useState<string>("all");
@@ -1552,7 +1323,7 @@ export const MarketOverviewView: React.FC<MarketOverviewViewProps> = ({
                     (
                       {
                         new: "新对话",
-                        kline_analysis: "AI 解读K线",
+                        kline_analysis: "K线分析",
                         usd_confidence: "美元与全球资产",
                         nvda_blackwell: "NVDA 算力周期",
                         btc_etf_flow: "BTC 现货 ETF 资金流",
@@ -1622,14 +1393,12 @@ export const MarketOverviewView: React.FC<MarketOverviewViewProps> = ({
                       </div>
                       <div>
                         <h4 className="text-base font-bold text-slate-900 dark:text-white">
-                          {lang === "zh"
-                            ? "AI 解读K线"
-                            : "AI candle reading"}
+                          {lang === "zh" ? "K线分析" : "Chart analysis"}
                         </h4>
                         <p className="mt-1.5 text-xs leading-6 text-slate-600 dark:text-slate-300">
                           {lang === "zh"
-                            ? "快速扫描K线图，结合消息面、K线数据和指标，助您解读行情趋势，识别潜在交易机会！"
-                            : "Scans the candles against news, price data and indicators to read the trend and flag setups."}
+                            ? "框选任意一段 K 线，AI 识别形态、计算支撑阻力并给出交易计划，记录与交易台同步保存。"
+                            : "Select any stretch of candles; AI reads patterns, levels and plans. Records are shared with the trading desk."}
                         </p>
                         <button
                           type="button"
@@ -1643,7 +1412,11 @@ export const MarketOverviewView: React.FC<MarketOverviewViewProps> = ({
                     </div>
                   </div>
                 ) : aceActiveTopic === "kline_analysis" ? (
-                  <KlineReading inst={klineInst} lang={lang} />
+                  <KlineWorkspace
+                    instruments={instruments}
+                    lang={lang}
+                    onTrade={onTrade ?? onQuickTrade}
+                  />
                 ) : aceActiveTopic === "ai_indicator" ? (
                   <>
                     <p>
@@ -1735,6 +1508,9 @@ plot(slow, color=color.orange, title="MA60")`}</pre>
               </div>
             </div>
 
+            {/* K线分析 has its own controls; the question composer is for the other topics. */}
+            {aceActiveTopic !== "kline_analysis" && (
+            <>
             {/* Bottom Floating Gradient Border Input Box (Exact Screenshot 2 Bottom Input) */}
             <div className="max-w-3xl mx-auto w-full pt-2 sticky bottom-0 bg-surface">
               <form
@@ -1856,6 +1632,8 @@ plot(slow, color=color.orange, title="MA60")`}</pre>
                 </div>
               </form>
             </div>
+            </>
+            )}
           </section>
         </div>
       )}

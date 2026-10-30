@@ -149,7 +149,10 @@ interface Props {
   compact?: boolean;
   mobile?: boolean;
   priceLines?: PriceLine[];
+  /** Reports the candles currently on screen (indices into the period's series) — used by K线分析. */
+  onView?: (view: ChartView) => void;
 }
+export type ChartView = { symbol: string; period: string; start: number; end: number; total: number };
 export function MarketChart({
   instrument,
   lang,
@@ -160,6 +163,7 @@ export function MarketChart({
   compact = false,
   mobile = false,
   priceLines = [],
+  onView,
 }: Props) {
   const t = (zh: string, en: string) => (lang === "zh" ? zh : en);
   const wrapper = useRef<HTMLDivElement>(null),
@@ -254,6 +258,11 @@ export function MarketChart({
   const start = Math.max(0, candles.length - count - offset),
     end = Math.min(candles.length, start + count),
     visible = candles.slice(start, end);
+  const viewSink = useRef(onView);
+  viewSink.current = onView;
+  useEffect(() => {
+    viewSink.current?.({ symbol: instrument.symbol, period, start, end, total: candles.length });
+  }, [instrument.symbol, period, start, end, candles.length]);
   const stats = useMemo(() => indicators(candles), [candles]);
   const w = Math.max(220, size.w),
     h = Math.max(mobile ? 180 : 270, size.h),

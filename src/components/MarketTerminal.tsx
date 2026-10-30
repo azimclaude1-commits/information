@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Search,
   Star,
@@ -15,10 +15,12 @@ import {
   Clock3,
   Activity,
   Sparkles,
+  ScanSearch,
 } from "lucide-react";
 import { Instrument } from "../data/marketData";
 import { AssetLogo } from "./AssetLogo";
-import { MarketChart, type PriceLine } from "./MarketChart";
+import { MarketChart, type ChartView, type PriceLine } from "./MarketChart";
+import { KlineFlow } from "./kline/KlineAnalysis";
 import { SignatureGate } from "./membership/SignatureGate";
 import { MarketDetails, type Alert, type Strategy } from "./MarketDetails";
 import { MobileTradingDesk } from "./MobileTradingDesk";
@@ -131,6 +133,9 @@ export const MarketTerminal: React.FC<Props> = ({
     field: "name" | "price" | "change";
     asc: boolean;
   }>({ field: "name", asc: true });
+  /** On-screen candles of the first chart; the desktop K线分析 crop page starts from them. */
+  const chartView = useRef<ChartView | null>(null);
+  const [klineOpen, setKlineOpen] = useState(false);
   const [period, setPeriod] = useState("4H"),
     [layout, setLayout] = useState(1),
     [leftOpen, setLeftOpen] = useState(true),
@@ -831,6 +836,10 @@ export const MarketTerminal: React.FC<Props> = ({
                     <Sparkles size={13} />
                     {t("AI 解读", "AI insight")}
                   </button>
+                  <button className="quote-ai is-kline" onClick={() => setKlineOpen(true)}>
+                    <ScanSearch size={13} />
+                    {t("K线分析", "Chart AI")}
+                  </button>
                 </div>
                 <div className="market-context-strip">
                   <div>
@@ -898,6 +907,7 @@ export const MarketTerminal: React.FC<Props> = ({
                         onTemplateApplied={() => setTemplate(undefined)}
                         template={index === 0 ? template : undefined}
                         priceLines={priceLines?.(s)}
+                        onView={index === 0 ? (v) => (chartView.current = v) : undefined}
                       />
                     </div>
                   ))}
@@ -964,11 +974,31 @@ export const MarketTerminal: React.FC<Props> = ({
             live={livePane}
             priceLines={priceLines?.(selected.symbol)}
             onTradeSide={onTradeSide}
+            onSelectSymbol={choose}
             onToast={onShowToast}
             onOpenAi={onOpenAiModal}
             alertOpen={alertOpen}
             onAlert={() => setAlertOpen(true)}
             onCloseAlert={() => setAlertOpen(false)}
+          />
+        )}
+        {klineOpen && isDesktop && (
+          <KlineFlow
+            instrument={selected}
+            period={chartView.current?.period ?? period}
+            view={chartView.current}
+            source="desk"
+            lang={lang}
+            onClose={() => setKlineOpen(false)}
+            onTrade={(rec, side) => {
+              if (rec.symbol !== selected.symbol) choose(rec.symbol);
+              onTradeSide?.(side);
+              setKlineOpen(false);
+            }}
+            onHistory={() => {
+              setKlineOpen(false);
+              window.location.hash = "#diagnose/ace/kline";
+            }}
           />
         )}
         {modal && (

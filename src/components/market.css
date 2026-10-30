@@ -3341,3 +3341,13 @@
     display: block;
   }
 }
+
+/* K线分析 entry beside AI 解读 in the desktop quote header */
+.market-terminal .quote-ai.is-kline {
+  color: var(--blue);
+  background: color-mix(in srgb, var(--blue) 10%, transparent);
+}
+.market-terminal .quote-ai.is-kline:hover {
+  color: var(--blue);
+  background: color-mix(in srgb, var(--blue) 17%, transparent);
+}
