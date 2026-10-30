@@ -2,7 +2,9 @@ import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Check, ChevronDown, ChevronRight, CreditCard, Fingerprint, Lock, ShieldCheck, X } from "lucide-react";
 import { DigitInput, Sheet } from "../ui/Sheet";
-import { COUNTRIES, defaultCountry } from "../../data/countries";
+import { CountrySheet } from "../ui/CountrySheet";
+import { countryByIso, defaultCountry } from "../../data/countries";
+import { Flag } from "../auth/AuthScreen";
 import {
   TEST_CARDS,
   cardBrand,
@@ -447,6 +449,7 @@ export function CardPaySheet({
   const [cvc, setCvc] = useState("");
   const [holder, setHolder] = useState("");
   const [country, setCountry] = useState(() => defaultCountry(lang));
+  const [countryOpen, setCountryOpen] = useState(false);
   const [zip, setZip] = useState("");
   const [save, setSave] = useState(autoRenew);
   const [tried, setTried] = useState(false);
@@ -713,16 +716,20 @@ export function CardPaySheet({
             {err("holder") && <p className="sh-error">{err("holder")}</p>}
           </label>
           <div className="pay-row">
-            <label className="sh-field">
-              <span>{t("账单国家/地区", "Billing country")}</span>
-              <select className="sh-input" value={country} onChange={(e) => setCountry(e.target.value)}>
-                {COUNTRIES.map((c) => (
-                  <option key={c.iso} value={c.iso}>
-                    {lang === "zh" ? c.zh : c.en}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <div className="sh-field">
+              <span id="pay-country-label">{t("账单国家/地区", "Billing country")}</span>
+              <button
+                type="button"
+                className="sh-input pay-country"
+                aria-labelledby="pay-country-label"
+                aria-haspopup="dialog"
+                onClick={() => setCountryOpen(true)}
+              >
+                <Flag iso={country} />
+                <span>{lang === "zh" ? countryByIso(country).zh : countryByIso(country).en}</span>
+                <ChevronDown size={16} />
+              </button>
+            </div>
             {needZip && (
               <label className="sh-field">
                 <span>{t("邮政编码", "Postal code")}</span>
@@ -764,6 +771,20 @@ export function CardPaySheet({
           "Card details are encrypted; AlphaPulse never stores the full number or code. The sandbox never charges a card.",
         )}
       </p>
+      {countryOpen && (
+        <CountrySheet
+          lang={lang}
+          selected={country}
+          showDial={false}
+          title={t("账单国家/地区", "Billing country")}
+          onClose={() => setCountryOpen(false)}
+          onPick={(iso) => {
+            setCountry(iso);
+            setZip("");
+            setCountryOpen(false);
+          }}
+        />
+      )}
     </Sheet>
   );
 }

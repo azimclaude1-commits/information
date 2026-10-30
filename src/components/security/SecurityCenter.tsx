@@ -14,15 +14,15 @@ import {
   Mail,
   MonitorSmartphone,
   QrCode,
-  Search,
   ShieldCheck,
   ShieldAlert,
   Smartphone,
 } from "lucide-react";
-import { COUNTRIES, POPULAR_ISO, countryByIso, type Country } from "../../data/countries";
+import { countryByIso } from "../../data/countries";
 import { digits, isPhone, maskEmail, useCodeSender } from "../auth/authState";
 import { Flag } from "../auth/AuthScreen";
 import { ConfirmSheet, DigitInput, Sheet } from "../ui/Sheet";
+import { CountrySheet } from "../ui/CountrySheet";
 import { newSecret, otpValid, PHISH_RE, useOtp, useSecurity, weakPin, type SecurityState } from "./securityState";
 import "./security.css";
 
@@ -122,45 +122,6 @@ function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boolean) =
 }
 
 /* ---------------- Country + phone ---------------- */
-function CountrySheet({ lang, selected, onPick, onClose }: { lang: Lang; selected: string; onPick: (iso: string) => void; onClose: () => void }) {
-  const t = tr(lang);
-  const [q, setQ] = useState("");
-  const sorted = useMemo(
-    () => [...COUNTRIES].sort((a, b) => (lang === "zh" ? a.zh.localeCompare(b.zh, "zh-CN") : a.en.localeCompare(b.en, "en"))),
-    [lang],
-  );
-  const query = q.trim().toLowerCase().replace(/^\+/, "");
-  const list = query
-    ? sorted.filter((c) => c.zh.includes(query) || c.en.toLowerCase().includes(query) || c.dial.startsWith(query))
-    : null;
-  const row = (c: Country) => (
-    <button key={c.iso} className="sc-country" aria-pressed={c.iso === selected} onClick={() => onPick(c.iso)}>
-      <Flag iso={c.iso} />
-      <span>{lang === "zh" ? c.zh : c.en}</span>
-      <em>+{c.dial}</em>
-      {c.iso === selected && <Check size={16} />}
-    </button>
-  );
-  return (
-    <Sheet title={t("选择国家/地区", "Country / region")} onClose={onClose} size="md" className="sc-country-sheet">
-      <label className="sh-inputbox sc-search">
-        <Search size={16} />
-        <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("搜索国家/地区或区号", "Search country or dial code")} />
-      </label>
-      {list ? (
-        list.length ? list.map(row) : <p className="sh-empty">{t("没有找到匹配的国家/地区", "No match")}</p>
-      ) : (
-        <>
-          <h3 className="sc-country-h">{t("常用地区", "Popular")}</h3>
-          {POPULAR_ISO.map((iso) => row(countryByIso(iso)))}
-          <h3 className="sc-country-h">{t("全部国家/地区", "All")}</h3>
-          {sorted.map(row)}
-        </>
-      )}
-    </Sheet>
-  );
-}
-
 /** 绑定手机 / 更换手机. Change verifies the current number (and authenticator) first. */
 export function PhoneBindSheet({
   lang,

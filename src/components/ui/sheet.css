@@ -1186,3 +1186,115 @@ textarea.sh-input {
   gap: 8px;
   margin: 14px 0 4px;
 }
+
+/* Country / region picker (CountrySheet) */
+.sh-country-sheet .sh-body {
+  padding-top: 0;
+}
+.sh-country-search {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin-bottom: 4px;
+  color: var(--ui-ink-3);
+  box-shadow: 0 -8px 0 var(--ui-surface), 0 8px 12px -10px rgb(16 24 40 / 0.25);
+}
+.sh-country-h {
+  margin: 14px 2px 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ui-ink-3);
+}
+.sh-country-list {
+  display: flex;
+  flex-direction: column;
+}
+.sh-country {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 50px;
+  padding: 8px 8px;
+  border-radius: 10px;
+  font-size: 14.5px;
+  color: var(--ui-ink);
+  text-align: left;
+  transition: background 0.12s;
+}
+/* Inset divider that starts after the flag, hidden around the highlighted row */
+.sh-country + .sh-country::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 44px;
+  right: 8px;
+  height: 1px;
+  background: var(--ui-line);
+}
+.sh-country:hover::before,
+.sh-country:hover + .sh-country::before,
+.sh-country[aria-pressed="true"]::before,
+.sh-country[aria-pressed="true"] + .sh-country::before {
+  display: none;
+}
+.sh-country:hover {
+  background: var(--ui-surface-2);
+}
+.sh-country .au-flag {
+  width: 24px;
+  height: 24px;
+  border-radius: 99px;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px var(--ui-line);
+}
+.sh-country > span {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+.sh-country small {
+  font-size: 11.5px;
+  color: var(--ui-ink-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sh-country em {
+  flex-shrink: 0;
+  min-width: 40px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--ui-ink-3);
+  background: var(--ui-surface-3);
+  font-variant-numeric: tabular-nums;
+}
+.sh-country > i {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 18px;
+  color: var(--ui-brand);
+}
+.sh-country[aria-pressed="true"] {
+  color: var(--ui-brand);
+  background: var(--ui-brand-soft);
+  font-weight: 600;
+}
+.sh-country[aria-pressed="true"] em {
+  color: var(--ui-brand);
+  background: transparent;
+}
+.sh-country-empty {
+  padding: 36px 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--ui-ink-3);
+}
