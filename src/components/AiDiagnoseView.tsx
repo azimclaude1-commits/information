@@ -16,6 +16,7 @@ import { Instrument } from '../data/marketData';
 import { AssetLogo } from './AssetLogo';
 import { MarketOverviewView } from './MarketOverviewView';
 import { AiLock, QuotaPill, useMembership } from './membership/Membership';
+import { AiNotice } from './compliance/Compliance';
 
 interface AiDiagnoseModalProps {
   instruments: Instrument[];
@@ -309,6 +310,11 @@ export const AiDiagnoseView: React.FC<AiDiagnoseModalProps> = ({
           cta={lang === 'zh' ? 'AI 诊股 · 消耗 1 次' : 'Run diagnosis · uses 1'}
           onUnlock={() => generate(currentInst)}
         >
+        <AiNotice
+          className="is-top"
+          source="market"
+          target={{ kind: 'ai', id: `diagnose:${currentInst.symbol}`, title: lang === 'zh' ? `${currentInst.symbol} AI 诊股报告` : `${currentInst.symbol} AI report` }}
+        />
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
           {/* Left 8 Cols: Screenshot 2 Style AI 解读今日走势 & 下单信息 Card */}
           <div className="lg:col-span-8 ui-card p-4 sm:p-6 flex flex-col justify-between space-y-4">
@@ -776,6 +782,10 @@ export const AiDiagnoseView: React.FC<AiDiagnoseModalProps> = ({
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{activeReport.riskWarning}</p>
             </div>
           </div>
+          <AiNotice
+            source="market"
+            target={{ kind: 'ai', id: `diagnose:${currentInst.symbol}:research`, title: lang === 'zh' ? `${currentInst.symbol} 四维研报` : `${currentInst.symbol} research` }}
+          />
           </AiLock>
         )}
       </div>

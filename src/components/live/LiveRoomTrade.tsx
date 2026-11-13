@@ -12,6 +12,7 @@ import {
 import { label, uid, type Lang, type LiveRoom } from "./liveState";
 import type { LiveStrategy } from "./liveExperience";
 import type { LiveStore } from "./useLive";
+import { SimNotice } from "../compliance/Compliance";
 
 export type LiveTradeDraft = {
   symbol: string;
@@ -279,6 +280,7 @@ export function LiveRoomTrade({
               {demo.summary[market].coin}
             </b>
           </div>
+          <SimNotice />
           {receipt ? (
             <div className="lx-success" role="status">
               {receipt}

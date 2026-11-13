@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { Instrument } from "../data/marketData";
 import { AssetLogo } from "./AssetLogo";
+import { AiNotice } from "./compliance/Compliance";
 import { makeCandles } from "./marketModel";
 import {
   AI_INSIGHTS,
@@ -1488,6 +1489,12 @@ plot(slow, color=color.orange, title="MA60")`}</pre>
                     </div>
                   ))
                 )}
+                {aceActiveTopic !== "new" && aceActiveTopic !== "kline_analysis" && (
+                  <AiNotice
+                    source={aceActiveTopic === "ai_indicator" ? "market" : "research"}
+                    target={{ kind: "ai", id: `ace:${aceActiveTopic}`, title: lang === "zh" ? "Ace智搜回答" : "Ace answer" }}
+                  />
+                )}
 
                 {/* Custom Follow-up Q&A */}
                 {aceCustomMessages.map((msg, i) => (
@@ -1502,6 +1509,11 @@ plot(slow, color=color.orange, title="MA60")`}</pre>
                     </div>
                     <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#111722] border border-slate-200 dark:border-slate-800 text-xs leading-6 whitespace-pre-line">
                       {msg.a}
+                      <AiNotice
+                        compact
+                        source="research"
+                        target={{ kind: "ai", id: `ace:${aceActiveTopic}:${i}`, title: msg.q.slice(0, 24) }}
+                      />
                     </div>
                   </div>
                 ))}

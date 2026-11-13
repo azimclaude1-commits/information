@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Check, Copy, Download, Link2, RefreshCw, Send, Share2, Sparkles } from "lucide-react";
 import type { Article } from "./newsContent";
 import { Sheet } from "./ui/Sheet";
+import { AiNotice } from "./compliance/Compliance";
 
 const SYMBOLS: [RegExp, string, string][] = [
   [/BTC|比特币/i, "BTC/USD", "BTC"],
@@ -140,7 +141,7 @@ export function AiSummarySheet({
               </div>
             </div>
           )}
-          <p className="sh-hint">内容由 AI 根据原文生成，可能存在偏差，仅供参考，不构成投资建议。</p>
+          <AiNotice source="news" target={{ kind: "ai", id: `summary:${article.id}`, title: `${article.title.slice(0, 20)} · AI 摘要` }} />
         </>
       )}
     </Sheet>

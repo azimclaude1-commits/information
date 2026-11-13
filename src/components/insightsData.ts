@@ -120,9 +120,9 @@ export const AI_INSIGHTS: AiInsight[] = [
     stanceZh: "AI看涨",
     stanceEn: "AI Bullish",
     descZh:
-      "NVDA 处于上升通道突破点，北美四大云厂商 Q4 算力资本开支上修，暗池大单连续3日净流入，短期看涨至 $250-$265。",
+      "NVDA 处于上升通道突破点，北美四大云厂商 Q4 算力资本开支上修，暗池大单连续3日净流入，短期关注 $250-$265 区间。",
     descEn:
-      "NVDA holds an ascending channel breakout as hyperscaler Q4 CapEx revises upward; institutional dark-pool inflows target $250-$265.",
+      "NVDA holds an ascending channel breakout as hyperscaler Q4 CapEx revises upward; watch the $250-$265 zone.",
   },
   {
     symbol: "XAU/USD",
@@ -132,9 +132,9 @@ export const AI_INSIGHTS: AiInsight[] = [
     stanceZh: "AI看涨",
     stanceEn: "AI Bullish",
     descZh:
-      "现货黄金站稳 4140 美元关口，全球央行购金与避险买盘强劲，多头持仓占比达 76%，回踩 4128 支撑位可顺势做多。",
+      "现货黄金站稳 4140 美元关口，全球央行购金与避险买盘强劲，多头持仓占比达 76%，关注 4128 支撑位表现。",
     descEn:
-      "Spot Gold holds firmly above $4,140 on central bank accumulation and 76% long sentiment; pullbacks to $4,128 offer high-RR entries.",
+      "Spot Gold holds firmly above $4,140 on central bank accumulation and 76% long sentiment; watch how $4,128 support holds.",
   },
   {
     symbol: "BTC/USD",
@@ -144,7 +144,7 @@ export const AI_INSIGHTS: AiInsight[] = [
     stanceZh: "AI看涨",
     stanceEn: "AI Bullish",
     descZh:
-      "BTC 在 85300 上方交投积极，机构现货 ETF 买盘强劲，长期目标看涨至 100k+，但短期需关注 86.5k-87k 阻力突破情况。",
+      "BTC 在 85300 上方交投积极，机构现货 ETF 买盘强劲，短期需关注 86.5k-87k 阻力突破情况。",
     descEn:
       "BTC trades actively above $85,300 with strong ETF spot inflows; watch $86.5k-$87k short-term resistance for breakout continuation.",
   },

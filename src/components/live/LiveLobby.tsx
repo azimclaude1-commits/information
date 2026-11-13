@@ -28,6 +28,12 @@ export function LiveLobby({ store, lang }: { store: LiveStore; lang: Lang }) {
           <LiveNotices store={store} lang={lang} />
         </div>
       </div>
+      <p className="live-room-note lv-lobby-note">
+        {t(
+          "直播由平台认证主播提供，内容仅供市场学习与交流，不构成投资建议；直播间内的交易均为模拟交易。发现违规内容可在直播间「更多 → 举报直播间」反馈。",
+          "Rooms are hosted by verified hosts for market education only and are not investment advice; all trading in rooms is simulated. Report rule-breaking content via More → Report room.",
+        )}
+      </p>
       {onAir.length ? (
         <FeaturedLive rooms={onAir} store={store} lang={lang} onOpen={open} />
       ) : (

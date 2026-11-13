@@ -11,6 +11,7 @@ import { DateLabel } from "../live/LiveShared";
 import { ME, label, personName, uid } from "../live/liveState";
 import { CommunityPagination, ProfileAvatar, useCommunity } from "./Community";
 import { commentCount, type Comment } from "./communityState";
+import { ReportButton } from "../compliance/Compliance";
 
 export function NewsComments({ postId }: { postId: string }) {
   const c = useCommunity(),
@@ -103,6 +104,12 @@ export function NewsComments({ postId }: { postId: string }) {
                 >
                   {label(c.lang, "删除", "Delete")}
                 </button>
+              )}
+              {comment.userId !== ME && (
+                <ReportButton
+                  size={12}
+                  target={{ kind: "comment", id: comment.id, title: comment.text.slice(0, 24) }}
+                />
               )}
             </div>
           )}

@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Instrument } from "../data/marketData";
 import { AssetLogo } from "./AssetLogo";
+import { AiNotice } from "./compliance/Compliance";
 
 interface AiChartInsightModalProps {
   isOpen: boolean;
@@ -130,6 +131,11 @@ export const AiChartInsightModal: React.FC<AiChartInsightModalProps> = ({
 
         {/* Modal Body */}
         <div className="p-4 sm:p-6 overflow-y-auto space-y-5 flex-1">
+          <AiNotice
+            className="is-top"
+            source="market"
+            target={{ kind: "ai", id: `insight:${instrument.symbol}`, title: lang === "zh" ? `${instrument.symbol} AI 解读` : `${instrument.symbol} AI insight` }}
+          />
           {/* Interactive Sub-Tabs inside Modal */}
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 overflow-x-auto">
             <div className="flex items-center gap-2 shrink-0">

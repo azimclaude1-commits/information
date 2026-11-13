@@ -8,7 +8,12 @@ import {
   Receipt,
   Zap,
   FileText,
+  Flag,
   Headphones,
+  Mail,
+  ScrollText,
+  ShieldQuestion,
+  UserX,
   LogOut,
   MonitorPlay,
   QrCode,
@@ -23,6 +28,7 @@ import {
 import type { AssetSubPage } from "./WithdrawView";
 import "./accountPanel.css";
 import { useCommunity } from "./community/Community";
+import { useCompliance } from "./compliance/Compliance";
 import {
   TierBadge,
   countdown,
@@ -77,6 +83,12 @@ export function AccountPanel({
 }) {
   const t = (zh: string, en: string) => (lang === "zh" ? zh : en);
   const community = useCommunity();
+  const compliance = useCompliance();
+  /** Closes the panel first so the sheet is the only dialog on screen. */
+  const then = (fn: () => void) => () => {
+    onClose();
+    fn();
+  };
   const member = useMembership();
   const now = useNow(1000);
   const paid = member.tier !== "free";
@@ -297,12 +309,19 @@ export function AccountPanel({
           </section>
           <section>
             <h2>{t("账户安全", "Security")}</h2>
-            {menu(
-              SECURITY.map((item) => ({
+            {menu([
+              ...SECURITY.map((item) => ({
                 ...item,
                 onClick: () => onAsset(item.id),
               })),
-            )}
+              {
+                id: "delete",
+                icon: UserX,
+                zh: "注销账户",
+                en: "Delete account",
+                onClick: then(compliance.openDeleteAccount),
+              },
+            ])}
           </section>
           <section>
             <h2>{t("服务", "Service")}</h2>
@@ -313,6 +332,46 @@ export function AccountPanel({
                 zh: member.tier === "elite" ? "专属客服" : "客服中心",
                 en: member.tier === "elite" ? "Elite support" : "Help center",
                 onClick: onSupport,
+              },
+              {
+                id: "contact",
+                icon: Mail,
+                zh: "联系我们",
+                en: "Contact us",
+                onClick: then(compliance.openContact),
+              },
+              {
+                id: "reports",
+                icon: Flag,
+                zh: "我的举报",
+                en: "My reports",
+                onClick: then(compliance.openReports),
+              },
+            ])}
+          </section>
+          <section>
+            <h2>{t("协议与政策", "Terms & policies")}</h2>
+            {menu([
+              {
+                id: "terms",
+                icon: ScrollText,
+                zh: "用户协议",
+                en: "Terms of Service",
+                onClick: then(() => compliance.openLegal("terms")),
+              },
+              {
+                id: "privacy",
+                icon: ShieldQuestion,
+                zh: "隐私政策",
+                en: "Privacy Policy",
+                onClick: then(() => compliance.openLegal("privacy")),
+              },
+              {
+                id: "subscription",
+                icon: Receipt,
+                zh: "会员协议",
+                en: "Membership terms",
+                onClick: then(() => compliance.openLegal("subscription")),
               },
             ])}
           </section>

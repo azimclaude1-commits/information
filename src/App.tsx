@@ -43,6 +43,8 @@ import { AiChartInsightModal } from "./components/AiChartInsightModal";
 import { CheckInAndRateModal } from "./components/Modals";
 import { SupportCenter } from "./components/SupportCenter";
 import { AuthScreen } from "./components/auth/AuthScreen";
+import { identityOf, type AuthAccount } from "./components/auth/authState";
+import { ComplianceProvider } from "./components/compliance/Compliance";
 import { TradingWorkspace } from "./components/TradingWorkspace";
 import {
   MembershipProvider,
@@ -129,6 +131,9 @@ const NAV_ALIASES: Record<string, NavTab> = {
   market_overview: "home",
 };
 
+const ACCOUNTS_KEY = "alphapulse.auth.accounts.v1";
+const DELETED_KEY = "alphapulse.session.deleted";
+
 export default function App() {
   const [lang, setLang] = useState<"zh" | "en">("zh");
   const [theme, setTheme] = useState<"dark" | "light">("light");
@@ -187,7 +192,15 @@ export default function App() {
   const [userEmail, setUserEmail] = useState<string>(
     "alpha.trader@mitrade-vip.com",
   );
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
+  // Set right before the reload that follows an account deletion, so the app starts signed out.
+  const [deletedAccount] = useState<string | null>(() => {
+    try {
+      return sessionStorage.getItem(DELETED_KEY);
+    } catch {
+      return null;
+    }
+  });
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(!deletedAccount);
   const [phoneVerified, setPhoneVerified] = useState<boolean>(false);
   const [verifiedPhoneNumber, setVerifiedPhoneNumber] = useState<string>("");
 
@@ -269,6 +282,34 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    if (!deletedAccount) return;
+    try {
+      sessionStorage.removeItem(DELETED_KEY);
+    } catch {
+      /* ignore */
+    }
+    setAuthModalOpen(true);
+    setToastMsg(lang === "zh" ? "账户已注销，相关数据已删除" : "Account deleted and its data removed");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  /** Removes the signed-in account and every piece of local app data, then restarts signed out. */
+  const deleteAccount = () => {
+    try {
+      const raw = localStorage.getItem(ACCOUNTS_KEY);
+      const accounts: AuthAccount[] = raw ? JSON.parse(raw) : [];
+      const keep = accounts.filter((a) => identityOf(a).display !== userEmail);
+      for (const key of Object.keys(localStorage))
+        if (key.startsWith("alphapulse.") && key !== ACCOUNTS_KEY) localStorage.removeItem(key);
+      localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(keep));
+      sessionStorage.setItem(DELETED_KEY, userEmail);
+    } catch {
+      /* storage blocked: still sign out below */
+    }
+    window.location.hash = "home";
+    window.location.reload();
+  };
+
+  useEffect(() => {
     if (!toastMsg) return;
     const t = setTimeout(() => setToastMsg(null), 3500);
     return () => clearTimeout(t);
@@ -327,6 +368,13 @@ export default function App() {
   return (
     <CommunityProvider live={liveStore} lang={lang}>
       <MembershipProvider value={membership}>
+      <ComplianceProvider
+        lang={lang}
+        account={userEmail}
+        onToast={setToastMsg}
+        onDeleteAccount={deleteAccount}
+        onSupport={() => setSupportOpen(true)}
+      >
       <div className={theme === "dark" ? "dark" : ""}>
         {assetDrawerOpen && (
           <AccountPanel
@@ -884,6 +932,7 @@ export default function App() {
           {paywall}
         </div>
       </div>
+      </ComplianceProvider>
       </MembershipProvider>
     </CommunityProvider>
   );

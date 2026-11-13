@@ -253,7 +253,7 @@ export function AssetHome({
             <div className="text-[12px] text-ink-3">{t('可提现奖励', 'Withdrawable rewards')}</div>
             <div className="mt-1 text-[22px] font-semibold text-ink tabular-nums">{money(pf.reward)} USDT</div>
             <p className="mt-3 text-[13px] text-ink-3 leading-6">
-              {t('签到与评分奖励会发放到这里，可单独提现。', 'Check-in and rating bonuses land here and can be withdrawn separately.')}
+              {t('签到奖励会发放到这里，可单独提现。', 'Check-in rewards land here and can be withdrawn separately.')}
             </p>
             <div className="mt-5 grid grid-cols-2 gap-3">
               <button onClick={onRecords} className="h-11 rounded-xl bg-surface-3 text-ink text-[14px] font-medium hover:bg-line transition-colors cursor-pointer">

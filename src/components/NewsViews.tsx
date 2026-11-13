@@ -40,6 +40,7 @@ import { authorId } from "./community/communityState";
 import { NewsComments } from "./community/NewsComments";
 import { AiSummarySheet, ShareSheet } from "./NewsSheets";
 import { useMembership } from "./membership/Membership";
+import { ReportButton } from "./compliance/Compliance";
 
 export function NewsDialog({
   title,
@@ -499,6 +500,7 @@ export function FlashNewsView({
                     <Share2 size={14} />
                     分享
                   </button>
+                  <ReportButton target={{ kind: "flash", id: `flash:${item.id}`, title: item.title || item.body.slice(0, 24) }} />
                 </div>
                 <NewsComments postId={`flash:${item.id}`} />
               </div>
@@ -643,6 +645,7 @@ export function FlashNewsView({
                   <Share2 size={14} />
                   分享
                 </button>
+                <ReportButton target={{ kind: "flash", id: `flash:${detail.id}`, title: detail.title || detail.body.slice(0, 24) }} />
               </div>
             </>
           )}
@@ -992,6 +995,7 @@ export function HeadlinesView({
               <Share2 size={16} />
               分享
             </button>
+            <ReportButton size={16} target={{ kind: "article", id: `article:${current.id}`, title: current.title }} />
           </footer>
         </section>
       </div>

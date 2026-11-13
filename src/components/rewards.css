@@ -196,3 +196,60 @@
   font-weight: 600;
   color: var(--ui-ink-2);
 }
+
+/* Published check-in rules */
+.rw-rules h3 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.rw-rules-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ui-brand);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.rw-rules-table {
+  width: 100%;
+  border: 1px solid var(--ui-line);
+  border-radius: 10px;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  font-size: 12.5px;
+}
+.rw-rules-table th,
+.rw-rules-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--ui-line);
+  text-align: left;
+}
+.rw-rules-table tr:last-child th,
+.rw-rules-table tr:last-child td {
+  border-bottom: 0;
+}
+.rw-rules-table th {
+  width: 34%;
+  background: var(--ui-surface-2);
+  color: var(--ui-ink-2);
+  font-weight: 500;
+}
+.rw-rules-table td {
+  color: var(--ui-ink);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.rw-rules-list {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  list-style: disc;
+  color: var(--ui-ink-2);
+  font-size: 12.5px;
+  line-height: 1.7;
+}

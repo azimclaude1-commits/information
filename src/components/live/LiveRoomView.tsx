@@ -12,6 +12,7 @@ import {
   Ellipsis,
   Expand,
   Eye,
+  Flag,
   Gift,
   Heart,
   Info,
@@ -92,6 +93,7 @@ import {
   useMic,
 } from "./LiveViewerPanels";
 import { PacketRain } from "./PacketRain";
+import { useCompliance } from "../compliance/Compliance";
 import { GiftAnimation } from "./GiftAnimation";
 import { useRoomActivity } from "./useRoomActivity";
 import {
@@ -155,6 +157,7 @@ export function LiveRoomView({
 }: Props) {
   const t = (zh: string, en: string) => label(lang, zh, en);
   const community = useCommunity();
+  const compliance = useCompliance();
   const desktop = useMinWidth(1024);
   const [dialog, setDialog] = useState<DialogId | null>(null);
   const [panel, setPanel] = useState<Panel | null>(null);
@@ -504,6 +507,13 @@ export function LiveRoomView({
             icon: <ScrollText size={20} />,
             label: t("社区规则", "Rules"),
             onClick: () => setPanel("rules"),
+          },
+          {
+            id: "report",
+            icon: <Flag size={20} />,
+            label: t("举报直播间", "Report room"),
+            onClick: () =>
+              compliance.report({ kind: "live", id: `live:${room.id}`, title: t(room.title, room.titleEn) }),
           },
         ]}
       />

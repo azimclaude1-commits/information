@@ -1109,8 +1109,8 @@ export const WithdrawView: React.FC<WithdrawAndAuthViewsProps> = ({
                 </h1>
                 <p className="mt-1 text-[12px] leading-relaxed text-ink-3">
                   {lang === 'zh'
-                    ? '签到与评分奖励计入奖励账户，奖励账户余额可发起提现。本原型为模拟流程，不会真实到账。'
-                    : 'Check-in and rating bonuses land in the reward account and can be withdrawn. Simulated flow — nothing settles for real.'}
+                    ? '签到奖励计入奖励账户，奖励账户余额可发起提现。本原型为模拟流程，不会真实到账。'
+                    : 'Check-in rewards land in the reward account and can be withdrawn. Simulated flow — nothing settles for real.'}
                 </p>
               </div>
               <div className="text-right shrink-0">
@@ -1667,7 +1667,7 @@ export const WithdrawView: React.FC<WithdrawAndAuthViewsProps> = ({
                 {[
                   { id: 'cash', zh: acctName('cash'), desc: lang === 'zh' ? '模拟金储备，用于向交易账户划转' : 'Virtual reserve for funding the trading account', usdt: acctBalances.cash.USDT },
                   { id: 'stock', zh: acctName('stock'), desc: lang === 'zh' ? `CFD 以 USD、永续以 USDT 计保证金 · 可转出 $${transferable('stock', 'USD').toLocaleString()} / ${transferable('stock', 'USDT').toLocaleString()} USDT` : `USD margins CFDs, USDT margins perpetuals · free $${transferable('stock', 'USD').toLocaleString()} / ${transferable('stock', 'USDT').toLocaleString()} USDT`, usdt: acctBalances.stock.USD + acctBalances.stock.USDT },
-                  { id: 'reward', zh: lang === 'zh' ? '奖励账户' : 'Rewards', desc: lang === 'zh' ? '签到与评分奖励 · 可发起提现' : 'Check-in and rating bonuses · withdrawable', usdt: acctBalances.reward?.USDT ?? 0 },
+                  { id: 'reward', zh: lang === 'zh' ? '奖励账户' : 'Rewards', desc: lang === 'zh' ? '签到奖励 · 可发起提现' : 'Check-in rewards · withdrawable', usdt: acctBalances.reward?.USDT ?? 0 },
                 ].map((a) => (
                   <div
                     key={a.id}

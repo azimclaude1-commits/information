@@ -23,6 +23,7 @@ import {
   stepDecimals,
 } from "./demoTrading";
 import { EquitySheet } from "./TradeSheets";
+import { SimNotice } from "./compliance/Compliance";
 
 interface Props {
   compact?: boolean;
@@ -538,6 +539,8 @@ export function OrderTicket({
           </button>
         </p>
       )}
+
+      <SimNotice className="tk-sim" />
 
       <button
         type="submit"

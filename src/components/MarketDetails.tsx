@@ -29,6 +29,7 @@ import {
 } from "../data/marketData";
 import { number, signed, useSavedState } from "./marketModel";
 import { PriceAlertSheet, StrategySheet } from "./AlertStrategySheets";
+import { ReportButton } from "./compliance/Compliance";
 
 interface Props {
   onOpenAiModal: () => void;
@@ -1276,6 +1277,10 @@ export function MarketDetails({
                     <b>{value}</b>
                   </div>
                 ))}
+                <div className="md-source">
+                  <span>{t("来源：平台行情数据与公开资料", "Source: platform quotes and public data")}</span>
+                  <ReportButton target={{ kind: "market", id: `profile:${i.symbol}`, title: `${i.symbol} · ${t("品种简况", "Profile")}` }} />
+                </div>
               </>
             ) : selectedArticle ? (
               <>
@@ -1286,6 +1291,21 @@ export function MarketDetails({
                 <p className="article-body">
                   {t(selectedArticle.summaryZh, selectedArticle.summaryEn)}
                 </p>
+                <div className="md-source">
+                  <span>
+                    {t(
+                      "来源：AlphaPulse 资讯 · 仅供参考，不构成投资建议",
+                      "Source: AlphaPulse News · For reference only, not investment advice",
+                    )}
+                  </span>
+                  <ReportButton
+                    target={{
+                      kind: "news",
+                      id: `desk-news:${selectedArticle.titleEn}`,
+                      title: t(selectedArticle.titleZh, selectedArticle.titleEn),
+                    }}
+                  />
+                </div>
               </>
             ) : (
               <>
@@ -1315,6 +1335,17 @@ export function MarketDetails({
                 >
                   {t("应用到图表", "Apply to chart")}
                 </button>
+                <div className="md-source">
+                  <span>
+                    {t(
+                      "来源：平台行情数据（模拟报价）· 仅供参考，不构成投资建议",
+                      "Source: platform quotes (simulated) · Not investment advice",
+                    )}
+                  </span>
+                  <ReportButton
+                    target={{ kind: "market", id: `analysis:${i.symbol}`, title: `${i.symbol} · ${t("图表分析", "Chart study")}` }}
+                  />
+                </div>
               </>
             )}
           </section>

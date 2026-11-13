@@ -12,9 +12,8 @@ export type CloseReason = "manual" | "tp" | "sl" | "liq";
 export type AccountKey = "cash" | "stock" | "reward";
 export type DemoAccounts = Record<AccountKey, Record<string, number>>;
 
-/** Check-in and rating bonuses are flat USDT amounts and land in the reward account */
+/** Check-in rewards are flat USDT amounts and land in the reward account (ratings are never rewarded). */
 export const CHECK_IN_REWARD_USDT = 10;
-export const RATING_REWARD_USDT = 15;
 /** Extra bonus on the 7th consecutive check-in day */
 export const STREAK_BONUS_USDT = 20;
 export const REWARD_WITHDRAW_FEE_USDT = 1;

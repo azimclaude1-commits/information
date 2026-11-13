@@ -982,3 +982,16 @@
     animation: none;
   }
 }
+
+/* Full legal texts (LegalBody) on the always-dark auth surface */
+.au-doc .cm-doc {
+  --ui-ink: var(--au-ink);
+  --ui-ink-2: var(--au-ink-2);
+  --ui-ink-3: var(--au-ink-3);
+  --ui-surface-2: var(--au-field);
+  --ui-line: var(--au-line);
+  --ui-brand: var(--au-brand);
+}
+.au-doc .cm-doc p {
+  font-size: 13px;
+}

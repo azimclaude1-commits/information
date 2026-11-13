@@ -11,6 +11,7 @@ import {
   type HistState,
 } from "./signatureMath";
 import "./signature.css";
+import { AiNotice } from "./compliance/Compliance";
 
 type Lang = "zh" | "en";
 type T = (zh: string, en: string) => string;
@@ -268,6 +269,11 @@ export function SignatureIndicators({
               <li key={line}>{line}</li>
             ))}
           </ul>
+          <AiNotice
+            compact
+            source="signature"
+            target={{ kind: "ai", id: `signature:${instrument.symbol}:${period}`, title: t(`${instrument.symbol} · ${period} 特色指标结论`, `${instrument.symbol} · ${period} indicator conclusion`) }}
+          />
         </div>
       ) : (
         <header className="sig-panel-head">
@@ -573,8 +579,8 @@ export function SignatureIndicators({
             <ul>
               <li>{t("OBV-MACD 把价格方向与成交量结合，并按近 100 根 K 线归一化到 ±50，巨量时比例尺也不会被压缩。", "OBV-MACD combines price direction with volume and is normalised to ±50 over 100 bars, so volume spikes never squash the scale.")}</li>
               <li>{t("紫色丝带 / 柱：资金流入、买盘支撑，多头强势；粉色：动能衰减或资金流出。", "Violet ribbon/bars: inflow and bullish strength; pink: fading momentum or outflow.")}</li>
-              <li>{t("绿色气泡（MACD / KDJ / RSI / DMI）为底背离：价格新低而指标未新低，可分批逢低吸纳。", "Green bubbles are bullish divergences: price makes a lower low while the indicator does not.")}</li>
-              <li>{t("红色气泡为顶背离：价格新高而指标未新高，建议获利了结、减仓或尝试高位做空。", "Red bubbles are bearish divergences: price makes a higher high while the indicator does not.")}</li>
+              <li>{t("绿色气泡（MACD / KDJ / RSI / DMI）为底背离：价格新低而指标未新低，提示下跌动能减弱。", "Green bubbles are bullish divergences: price makes a lower low while the indicator does not.")}</li>
+              <li>{t("红色气泡为顶背离：价格新高而指标未新高，提示上涨动能减弱。", "Red bubbles are bearish divergences: price makes a higher high while the indicator does not.")}</li>
               <li>{t("同一气泡出现多个指标即多指标共振，反转成功率与爆发力更高。", "Several indicators in one bubble means resonance — a stronger reversal signal.")}</li>
             </ul>
           </details>

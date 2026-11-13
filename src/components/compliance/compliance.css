@@ -1,0 +1,506 @@
+/* Store-review compliance UI (cm-*): AI labels, paper-trading notice, reports, legal docs, contact, deletion. */
+
+.cm-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ui-brand);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.cm-link:hover {
+  text-decoration: underline;
+}
+
+/* ---------- AI notice ---------- */
+.cm-ai {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--ui-line);
+  border-radius: 10px;
+  background: var(--ui-surface-2);
+  color: var(--ui-ink-2);
+  font-size: 12px;
+  line-height: 1.6;
+  text-align: left;
+}
+.cm-ai p {
+  margin: 0;
+}
+.cm-ai-main {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  color: var(--ui-ink);
+  font-weight: 500;
+}
+.cm-ai-tag {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #6d5dfc, #2962ff);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.cm-ai-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 12px;
+  color: var(--ui-ink-3);
+  font-size: 11.5px;
+}
+.cm-ai-meta .cm-link {
+  margin-left: auto;
+  font-size: 12px;
+}
+.cm-ai.is-compact {
+  margin-top: 8px;
+  padding: 8px 10px;
+  gap: 4px;
+}
+.cm-ai.is-compact .cm-ai-main {
+  font-size: 11.5px;
+}
+
+/* ---------- Paper-trading notice ---------- */
+.cm-sim {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  margin: 10px 0;
+  padding: 10px 12px;
+  border: 1px solid rgb(232 147 12 / 0.35);
+  border-radius: 10px;
+  background: rgb(232 147 12 / 0.09);
+  color: var(--ui-ink-2);
+  font-size: 12px;
+  line-height: 1.55;
+  text-align: left;
+}
+.cm-sim > svg {
+  flex: none;
+  margin-top: 1px;
+  color: var(--ui-warn);
+}
+.cm-sim b {
+  display: block;
+  color: var(--ui-ink);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+.cm-sim p {
+  margin: 2px 0 0;
+}
+.cm-sim .cm-link {
+  margin-left: 4px;
+  font-size: 12px;
+}
+.market-terminal .cm-sim .cm-link,
+.market-terminal .cm-sim .cm-link:hover {
+  background: none;
+  color: var(--ui-brand);
+  border-radius: 0;
+}
+
+/* ---------- Report button ---------- */
+.cm-report-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ui-ink-3);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.cm-report-btn:hover {
+  color: var(--ui-down);
+}
+.market-terminal .cm-report-btn:hover {
+  background: none;
+  color: var(--ui-down);
+}
+
+/* ---------- Report sheet ---------- */
+.cm-reasons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+@media (max-width: 420px) {
+  .cm-reasons {
+    grid-template-columns: 1fr;
+  }
+}
+.cm-reasons > button {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  padding: 10px 11px;
+  border: 1px solid var(--ui-line);
+  border-radius: 10px;
+  background: var(--ui-surface);
+  color: var(--ui-ink);
+  text-align: left;
+  cursor: pointer;
+}
+.cm-reasons > button[aria-checked="true"] {
+  border-color: var(--ui-brand);
+  background: var(--ui-brand-soft);
+}
+.cm-reasons b {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+}
+.cm-reasons small {
+  display: block;
+  margin-top: 2px;
+  color: var(--ui-ink-3);
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+.cm-radio {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  border: 1.5px solid var(--ui-line-2);
+  border-radius: 50%;
+  color: #fff;
+}
+[aria-checked="true"] > .cm-radio {
+  border-color: var(--ui-brand);
+  background: var(--ui-brand);
+}
+.cm-req {
+  color: var(--ui-down);
+  font-style: normal;
+}
+.cm-opt {
+  color: var(--ui-ink-3);
+  font-style: normal;
+  font-weight: 400;
+  font-size: 11.5px;
+}
+.cm-done {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 10px 4px 4px;
+  text-align: center;
+}
+.cm-done > svg {
+  color: var(--ui-up);
+}
+.cm-done b {
+  color: var(--ui-ink);
+  font-size: 16px;
+}
+.cm-done p {
+  margin: 0;
+  color: var(--ui-ink-2);
+  font-size: 13px;
+  line-height: 1.65;
+}
+.cm-done small {
+  color: var(--ui-ink-3);
+  font-size: 12px;
+}
+.cm-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 16px;
+}
+.cm-result {
+  color: var(--ui-up) !important;
+}
+.cm-empty {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 36px 12px;
+  color: var(--ui-ink-3);
+  text-align: center;
+  font-size: 13px;
+}
+.cm-empty p {
+  margin: 0;
+  max-width: 300px;
+  line-height: 1.6;
+}
+
+/* ---------- Legal documents ---------- */
+.cm-doc {
+  color: var(--ui-ink-2);
+  font-size: 13.5px;
+  line-height: 1.75;
+}
+.cm-doc p {
+  margin: 0 0 8px;
+}
+.cm-doc-meta {
+  color: var(--ui-ink-3);
+  font-size: 12px;
+}
+.cm-doc-intro {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--ui-surface-2);
+  color: var(--ui-ink);
+}
+.cm-doc-toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0 4px;
+}
+.cm-doc-toc a {
+  padding: 3px 9px;
+  border: 1px solid var(--ui-line);
+  border-radius: 999px;
+  color: var(--ui-ink-2);
+  font-size: 12px;
+  text-decoration: none;
+}
+.cm-doc-toc a:hover {
+  border-color: var(--ui-brand);
+  color: var(--ui-brand);
+}
+.cm-doc section {
+  scroll-margin-top: 12px;
+  margin-top: 18px;
+}
+.cm-doc h3 {
+  margin: 0 0 6px;
+  color: var(--ui-ink);
+  font-size: 15px;
+  font-weight: 700;
+}
+.cm-doc ul {
+  margin: 0 0 8px;
+  padding-left: 18px;
+  list-style: disc;
+}
+.cm-doc li {
+  margin: 3px 0;
+}
+.cm-doc-foot {
+  margin-top: 20px !important;
+  color: var(--ui-ink-3);
+  font-size: 12px;
+  text-align: right;
+}
+.cm-table-wrap {
+  margin: 6px 0 10px;
+  overflow-x: auto;
+  border: 1px solid var(--ui-line);
+  border-radius: 10px;
+}
+.cm-table {
+  width: 100%;
+  min-width: 300px;
+  overflow-wrap: anywhere;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+.cm-table th,
+.cm-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--ui-line);
+  text-align: left;
+  vertical-align: top;
+}
+.cm-table th {
+  background: var(--ui-surface-2);
+  color: var(--ui-ink);
+  font-weight: 600;
+}
+.cm-table tr:last-child td {
+  border-bottom: 0;
+}
+.cm-table td:first-child {
+  color: var(--ui-ink);
+  font-weight: 600;
+}
+
+/* ---------- Contact ---------- */
+.cm-contact {
+  display: grid;
+  gap: 8px;
+  margin-top: 4px;
+}
+.cm-contact-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--ui-line);
+  border-radius: 12px;
+  background: var(--ui-surface);
+  color: var(--ui-ink);
+  text-align: left;
+  text-decoration: none;
+  font: inherit;
+  cursor: pointer;
+}
+.cm-contact-row:hover {
+  border-color: var(--ui-line-2);
+  background: var(--ui-surface-2);
+}
+.cm-contact-ic {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--ui-brand-soft);
+  color: var(--ui-brand);
+}
+.cm-contact-main {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+}
+.cm-contact-main small {
+  color: var(--ui-ink-3);
+  font-size: 12px;
+}
+.cm-contact-main b {
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cm-contact-main em {
+  color: var(--ui-ink-3);
+  font-size: 11.5px;
+  font-style: normal;
+}
+.cm-chev {
+  flex: none;
+  color: var(--ui-ink-3);
+}
+.cm-icon-btn {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--ui-line);
+  border-radius: 8px;
+  background: var(--ui-surface);
+  color: var(--ui-ink-2);
+  cursor: pointer;
+}
+.cm-menu {
+  display: grid;
+  border: 1px solid var(--ui-line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.cm-menu > button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 0;
+  border-bottom: 1px solid var(--ui-line);
+  background: var(--ui-surface);
+  color: var(--ui-ink);
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+.cm-menu > button:last-child {
+  border-bottom: 0;
+}
+.cm-menu > button:hover {
+  background: var(--ui-surface-2);
+}
+.cm-menu > button > svg:first-child {
+  color: var(--ui-ink-3);
+}
+.cm-menu > button > span {
+  flex: 1;
+}
+.cm-menu > button > svg:last-child {
+  color: var(--ui-ink-3);
+}
+.cm-operator {
+  margin: 14px 0 0;
+  color: var(--ui-ink-3);
+  font-size: 12px;
+  text-align: center;
+}
+
+/* ---------- Account deletion ---------- */
+.cm-del-hero {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--ui-down-soft);
+  color: var(--ui-down);
+}
+.cm-del-hero p {
+  margin: 0;
+  color: var(--ui-ink);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.cm-del-list {
+  margin: 0;
+  padding-left: 18px;
+  list-style: disc;
+  color: var(--ui-ink-2);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.cm-del-p {
+  margin: 0;
+  color: var(--ui-ink-2);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.cm-agree {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin-top: 14px;
+  color: var(--ui-ink-2);
+  font-size: 13px;
+  line-height: 1.6;
+  cursor: pointer;
+}
+.cm-agree input {
+  margin-top: 3px;
+  accent-color: var(--ui-brand);
+}
+.cm-ai.is-top {
+  margin: 0 0 14px;
+}

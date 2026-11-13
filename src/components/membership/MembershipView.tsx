@@ -12,8 +12,10 @@ import {
   FileText,
   Headphones,
   Lock,
-  Minus,
+  ReceiptText,
   RefreshCw,
+  RotateCcw,
+  Unlock,
   ScanLine,
   ShieldCheck,
   Sparkles,
@@ -49,6 +51,8 @@ import {
   usdShort,
 } from "./Membership";
 import { CryptoCheckout, CryptoMark, CryptoResult } from "./CryptoCheckout";
+import { LegalBody } from "../compliance/Compliance";
+import { RefundGuide } from "./RefundGuide";
 import {
   AcceptedMarks,
   ApplePayMark,
@@ -62,11 +66,11 @@ import {
 } from "./PaymentSheets";
 
 type Lang = "zh" | "en";
-type Route = { page: "center" | "checkout" | "order" | "orders" | "crypto"; arg?: string };
+type Route = { page: "center" | "checkout" | "order" | "orders" | "crypto" | "refund"; arg?: string };
 
 const parse = (): Route => {
   const [, page, arg] = window.location.hash.slice(1).split("/");
-  if (page === "checkout" || page === "order" || page === "orders" || page === "crypto") return { page, arg };
+  if (page === "checkout" || page === "order" || page === "orders" || page === "crypto" || page === "refund") return { page, arg };
   return { page: "center" };
 };
 const go = goVip;
@@ -91,6 +95,8 @@ export function MembershipView({ lang, onSupport }: { lang: Lang; onSupport: () 
         <OrderDetail lang={lang} id={route.arg ?? ""} onSupport={onSupport} />
       ) : route.page === "orders" ? (
         <Orders lang={lang} />
+      ) : route.page === "refund" ? (
+        <RefundGuide lang={lang} channel={route.arg} onSupport={onSupport} />
       ) : (
         <Center lang={lang} onSupport={onSupport} />
       )}
@@ -122,6 +128,7 @@ function Center({ lang, onSupport }: { lang: Lang; onSupport: () => void }) {
   const perks = usePerks(lang);
   const [confirmOff, setConfirmOff] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
+  const [restore, setRestore] = useState(false);
   const member = m.tier !== "free";
   const daysLeft = member ? Math.max(1, Math.ceil((m.state.expiresAt - now) / DAY)) : 0;
   const counts = (["diagnose", "insight", "kline", "signature"] as AiFeature[]).map((f) => ({
@@ -256,10 +263,17 @@ function Center({ lang, onSupport }: { lang: Lang; onSupport: () => void }) {
         })}
       </section>
 
+      <BenefitSplit lang={lang} />
+
       <section id="mb-plans" className="mb-section">
         <div className="mb-section-head">
           <h2>{t("选择会员方案", "Choose a plan")}</h2>
-          <p>{t("按月订阅，AI诊股 · AI分析 · K线分析 · 特色指标共用每日次数", "Monthly. One daily quota shared by all AI features")}</p>
+          <p>
+            {t(
+              "可选连续包月（自动续费订阅）或单月购买（一次性，不自动续费）；AI诊股 · AI分析 · K线分析 · 特色指标共用每日次数",
+              "Monthly subscription (auto-renews) or a one-month pass (one-time, no renewal). All AI features share one daily quota",
+            )}
+          </p>
         </div>
         <div className="mb-plans">
           {PAID_TIERS.map((tier) => {
@@ -316,6 +330,12 @@ function Center({ lang, onSupport }: { lang: Lang; onSupport: () => void }) {
         <section className="ui-card mb-compare">
           <div className="ui-card-head">
             <h2 className="ui-card-title">{t("权益对比", "Compare plans")}</h2>
+            <span className="mb-compare-legend">
+              <Check size={13} strokeWidth={3} className="mb-yes" />
+              {t("可用", "Included")}
+              <Lock size={12} className="mb-no" />
+              {t("需订阅更高等级", "Higher plan")}
+            </span>
           </div>
           <div className="mb-compare-scroll">
             <table>
@@ -333,6 +353,7 @@ function Center({ lang, onSupport }: { lang: Lang; onSupport: () => void }) {
                 {(
                   [
                     [t("月费", "Price"), ["$0", "$10", "$30", "$99"]],
+                    [t("行情、资讯与模拟交易", "Quotes, news & paper trading"), [1, 1, 1, 1]],
                     [t("每日 AI 次数", "AI analyses / day"), ["3", "20", "80", "300"]],
                     [t("AI诊股", "AI diagnosis"), [1, 1, 1, 1]],
                     [t("AI分析（解读 / 摘要 / Ace智搜）", "AI analysis (insight, summary, Ace)"), [1, 1, 1, 1]],
@@ -352,7 +373,9 @@ function Center({ lang, onSupport }: { lang: Lang; onSupport: () => void }) {
                         {c === 1 ? (
                           <Check size={15} strokeWidth={3} className="mb-yes" />
                         ) : c === 0 ? (
-                          <Minus size={15} className="mb-no" />
+                          <span className="mb-cmp-lock" title={t("订阅更高等级解锁", "Unlocked by a higher plan")}>
+                            <Lock size={13} />
+                          </span>
                         ) : (
                           c
                         )}
@@ -437,6 +460,20 @@ function Center({ lang, onSupport }: { lang: Lang; onSupport: () => void }) {
                 </button>
               </div>
             ))}
+            <button className="mb-billing-row is-link" onClick={() => go("refund")}>
+              <span>
+                <b>{t("退款与取消订阅", "Refunds & cancellation")}</b>
+                <small>{t("App Store · Google Play · 网页支付 · 数字货币", "App Store · Google Play · web · crypto")}</small>
+              </span>
+              <ChevronRight size={16} />
+            </button>
+            <button className="mb-billing-row is-link" onClick={() => setRestore(true)}>
+              <span>
+                <b>{t("恢复购买", "Restore purchases")}</b>
+                <small>{t("换机或重装后同步已购会员", "Sync your plan after reinstalling")}</small>
+              </span>
+              <RotateCcw size={16} />
+            </button>
             <button className="mb-billing-row is-link" onClick={() => go("orders")}>
               <span>
                 <b>{t("订单记录与电子收据", "Orders & receipts")}</b>
@@ -484,13 +521,30 @@ function Center({ lang, onSupport }: { lang: Lang; onSupport: () => void }) {
             [
               t("升级怎么计费？", "How are upgrades billed?"),
               t(
-                "升级立即生效并重新计算 30 天有效期，原会员剩余天数按比例折抵；同档续费从当前到期日顺延 30 天。会员期内不支持降级。",
-                "Upgrades start a new 30-day period immediately and credit the unused part of your plan. Renewals extend from the current expiry. Downgrades wait until expiry.",
+                "升级立即生效并重新计算 30 天有效期，原会员剩余天数按整天折抵（不足一天按一天计）；同档续费从当前到期日顺延 30 天。会员期内不支持降级。",
+                "Upgrades start a new 30-day period immediately and credit the unused whole days of your plan (a started day counts as full). Renewals extend from the current expiry. Downgrades wait until expiry.",
+              ),
+            ],
+            [
+              t("连续包月和单月购买有什么区别？", "Subscription or one-month pass?"),
+              t(
+                "连续包月是自动续费订阅，每 30 天自动扣费直到你取消；单月购买是一次性购买 30 天，到期不会扣费，需要手动续费。数字货币仅支持单月购买。",
+                "The monthly subscription renews and charges every 30 days until you cancel. The one-month pass is a one-time purchase that simply ends after 30 days. Crypto supports the pass only.",
               ),
             ],
             [
               t("如何取消自动续费？", "How do I cancel auto-renew?"),
-              t("在本页关闭「连续包月」即可，当期权益保留至到期日。", "Turn off auto-renew on this page. Your plan stays active until it expires."),
+              t(
+                "App Store：设置 → Apple ID → 订阅；Google Play：付款和订阅 → 订阅；网页支付：在本页关闭「连续包月」。请在到期前 24 小时取消，当期权益保留至到期日。",
+                "App Store: Settings → Apple ID → Subscriptions. Google Play: Payments & subscriptions → Subscriptions. Web: turn off auto-renew on this page. Cancel 24 hours before expiry; your plan stays active until then.",
+              ),
+            ],
+            [
+              t("可以退款吗？", "Can I get a refund?"),
+              t(
+                "App Store 与 Google Play 的订单按商店规则申请退款；网页支付开通 7 天内且未使用会员额度的可申请退款。详见「退款与取消订阅」。",
+                "Store purchases are refunded under the store's rules; web purchases within 7 days and before using member allowance can be refunded. See Refunds & cancellation.",
+              ),
             ],
           ] as [string, string][]
         ).map(([q, a]) => (
@@ -533,6 +587,30 @@ function Center({ lang, onSupport }: { lang: Lang; onSupport: () => void }) {
               `关闭后 ${fmtTime(m.state.expiresAt, false)} 到期时不再扣款，当期${m.plan.zh}权益不受影响，到期后恢复为免费版（每日 3 次）。`,
               `You won't be charged on ${fmtTime(m.state.expiresAt, false)}. ${m.plan.en} stays active until then, then returns to Free (3 a day).`,
             )}
+          </p>
+        </ConfirmSheet>
+      )}
+      {restore && (
+        <ConfirmSheet
+          title={t("恢复购买", "Restore purchases")}
+          confirm={t("好的", "OK")}
+          cancel={t("查看订单", "Orders")}
+          onClose={() => {
+            setRestore(false);
+            go("orders");
+          }}
+          onConfirm={() => setRestore(false)}
+        >
+          <p className="mb-confirm-text">
+            {member
+              ? t(
+                  `已与账户同步：${m.plan.zh}有效期至 ${fmtTime(m.state.expiresAt, false)}${m.state.autoRenew ? "，连续包月已开启" : ""}。`,
+                  `Synced with your account: ${m.plan.en} until ${fmtTime(m.state.expiresAt, false)}${m.state.autoRenew ? ", auto-renew on" : ""}.`,
+                )
+              : t(
+                  "未找到该账户下有效的会员购买记录。如在其他账户购买，请切换账户后重试。",
+                  "No active purchase was found for this account. If you bought on another account, sign in with it and try again.",
+                )}
           </p>
         </ConfirmSheet>
       )}
@@ -683,28 +761,48 @@ function Checkout({ lang, tier: initial }: { lang: Lang; tier: PaidTier }) {
                 );
               })}
             </div>
-            <div className="mb-billing-row is-flat">
-              <span>
-                <b>{t("连续包月", "Auto-renew monthly")}</b>
+          </section>
+
+          <section className="ui-card mb-co-card">
+            <h3>{t("购买方式", "Purchase type")}</h3>
+            <div className="mb-co-types" role="radiogroup" aria-label={t("购买方式", "Purchase type")}>
+              <button role="radio" aria-checked={renew} disabled={isCrypto} onClick={() => setAutoRenew(true)}>
+                <span className="mb-co-type-top">
+                  <b>{t("连续包月", "Monthly subscription")}</b>
+                  <em className="is-sub">{t("自动续费订阅", "Auto-renewing")}</em>
+                </span>
+                <span className="mb-co-type-price">
+                  {usd(plan.price)}
+                  <small>{t(" / 30 天", " / 30 days")}</small>
+                </span>
                 <small>
                   {isCrypto
-                    ? t("数字货币按次支付，不支持连续包月，到期前会提醒你续费", "Crypto is paid per month; we'll remind you before expiry")
-                    : autoRenew
+                    ? t("数字货币支付不支持自动续费，请选择单月购买", "Not available with crypto; choose the one-month pass")
+                    : q
                       ? t(
-                          `到期自动续费 ${usd(plan.price)}，可随时在会员中心关闭`,
-                          `Renews at ${usd(plan.price)}; cancel any time`,
+                          `${fmtTime(q.periodEnd, false)} 起每 30 天自动扣费 ${usd(plan.price)}，到期前 24 小时扣费，可随时取消`,
+                          `Charges ${usd(plan.price)} every 30 days from ${fmtTime(q.periodEnd, false)}, 24 h before each renewal. Cancel any time`,
                         )
-                      : t("仅购买 1 个月，到期不自动扣款", "One month only, no automatic charge")}
+                      : ""}
                 </small>
-              </span>
-              <button
-                role="switch"
-                aria-checked={renew}
-                disabled={isCrypto}
-                className="mb-switch"
-                onClick={() => setAutoRenew(!autoRenew)}
-              >
-                <i />
+                <i className="mb-radio" />
+              </button>
+              <button role="radio" aria-checked={!renew} onClick={() => setAutoRenew(false)}>
+                <span className="mb-co-type-top">
+                  <b>{t("单月购买", "One-month pass")}</b>
+                  <em className="is-once">{t("一次性 · 不自动续费", "One-time · no renewal")}</em>
+                </span>
+                <span className="mb-co-type-price">
+                  {usd(plan.price)}
+                  <small>{t(" 一次性", " once")}</small>
+                </span>
+                <small>
+                  {t(
+                    "一次性购买 30 天会员，到期不会扣费，需要时可手动续费",
+                    "30 days, paid once. Nothing is charged when it ends; renew manually if you like",
+                  )}
+                </small>
+                <i className="mb-radio" />
               </button>
             </div>
           </section>
@@ -762,11 +860,20 @@ function Checkout({ lang, tier: initial }: { lang: Lang; tier: PaidTier }) {
               <>
                 <SheetRows
                   rows={[
-                    [`${t(plan.zh, plan.en)} · ${t("1 个月", "1 month")}`, usd(q.price)],
+                    [
+                      `${t(plan.zh, plan.en)} · ${renew ? t("连续包月", "Subscription") : t("单月购买", "One-month pass")}`,
+                      usd(q.price),
+                    ],
                     ...(q.credit > 0
                       ? ([[t(`原会员剩余 ${q.creditDays} 天折抵`, `Credit for ${q.creditDays} unused days`), `−${usd(q.credit)}`, "up"]] as [string, string, string][])
                       : []),
                     [t("税费", "Tax"), t("已含", "Included")],
+                    [
+                      t("自动续费", "Auto-renew"),
+                      renew
+                        ? t(`${fmtTime(q.periodEnd, false)} 扣费 ${usd(plan.price)}`, `${usd(plan.price)} on ${fmtTime(q.periodEnd, false)}`)
+                        : t("不开启 · 到期不扣费", "Off · no further charge"),
+                    ],
                   ]}
                 />
                 <div className="mb-co-total">
@@ -777,13 +884,7 @@ function Checkout({ lang, tier: initial }: { lang: Lang; tier: PaidTier }) {
                   <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
                   <span>
                     {t("我已阅读并同意", "I agree to the")}
-                    <button onClick={() => setTerms("read")}>{t("《会员服务协议》", "Membership Terms")}</button>
-                    {renew && (
-                      <>
-                        {t("和", " and ")}
-                        <button onClick={() => setTerms("read")}>{t("《自动续费规则》", "Auto-renew Rules")}</button>
-                      </>
-                    )}
+                    <button onClick={() => setTerms("read")}>{t("《会员服务与自动续费协议》", "Membership & Auto-renewal Terms")}</button>
                   </span>
                 </label>
                 <PayButton lang={lang} method={method} total={q.total} onClick={pay} />
@@ -791,6 +892,11 @@ function Checkout({ lang, tier: initial }: { lang: Lang; tier: PaidTier }) {
                   <ShieldCheck size={13} />
                   {t("模拟支付环境 · 不会产生真实扣款", "Sandbox checkout · no real charge")}
                 </p>
+                <button className="mb-co-refund" onClick={() => go("refund")}>
+                  <ReceiptText size={13} />
+                  {t("退款与取消订阅说明", "Refunds & cancellation")}
+                  <ChevronRight size={13} />
+                </button>
               </>
             ) : (
               <p className="mb-empty">
@@ -813,9 +919,9 @@ function Checkout({ lang, tier: initial }: { lang: Lang; tier: PaidTier }) {
 
       {terms && (
         <Sheet
-          title={t("会员服务协议", "Membership terms")}
+          title={t("会员服务与自动续费协议", "Membership & Auto-renewal Terms")}
           onClose={() => setTerms(null)}
-          size="md"
+          size="lg"
           footer={
             <>
               <button className="sh-btn" onClick={() => setTerms(null)}>
@@ -835,33 +941,7 @@ function Checkout({ lang, tier: initial }: { lang: Lang; tier: PaidTier }) {
             </>
           }
         >
-          <ol className="mb-terms">
-            <li>{t("会员权益自支付成功起生效，每期 30 天。", "Membership starts when payment succeeds and lasts 30 days per period.")}</li>
-            <li>
-              {t(
-                "连续包月会在到期日自动扣取下一期费用；可随时在会员中心关闭，关闭后当期权益保留至到期日。",
-                "Auto-renew charges the next period on the expiry date. Turn it off any time; the current period stays active.",
-              )}
-            </li>
-            <li>
-              {t(
-                "AI 分析次数每日 00:00（北京时间）重置，当日未使用的次数不累计、不退款。",
-                "AI analyses reset daily at 00:00 Beijing time and don't roll over or refund.",
-              )}
-            </li>
-            <li>
-              {t(
-                "升级立即生效，原会员剩余天数按比例折抵；会员期内不支持降级。",
-                "Upgrades apply immediately with credit for unused days. Downgrades wait until expiry.",
-              )}
-            </li>
-            <li>
-              {t(
-                "AI 分析结果基于模型与行情数据生成，仅供参考，不构成任何投资建议。",
-                "AI results are generated from models and market data, for reference only, not investment advice.",
-              )}
-            </li>
-          </ol>
+          <LegalBody lang={lang} doc="subscription" />
         </Sheet>
       )}
 
@@ -1048,6 +1128,10 @@ function OrderDetail({ lang, id, onSupport }: { lang: Lang; id: string; onSuppor
               `${fmtTime(order.periodStart, false)} — ${fmtTime(order.periodEnd, false)}`,
             ],
             [
+              t("购买方式", "Purchase type"),
+              order.autoRenew ? t("连续包月 · 自动续费订阅", "Monthly subscription · auto-renewing") : t("单月购买 · 不自动续费", "One-month pass · no renewal"),
+            ],
+            [
               t("自动续费", "Auto-renew"),
               order.autoRenew
                 ? t(`已开启 · ${fmtTime(order.periodEnd, false)} 续费 ${usd(order.price)}`, `On · ${usd(order.price)} on ${fmtTime(order.periodEnd, false)}`)
@@ -1098,6 +1182,12 @@ function OrderDetail({ lang, id, onSupport }: { lang: Lang; id: string; onSuppor
           <Headphones size={13} />
           {t("支付遇到问题？联系客服", "Payment issue? Contact support")}
         </button>
+        {order.status === "paid" && (
+          <button className="mb-link" onClick={() => go("refund/web")}>
+            <ReceiptText size={13} />
+            {t("申请退款 / 取消订阅", "Refund or cancel")}
+          </button>
+        )}
         <span>{t("模拟支付环境 · 不会产生真实扣款", "Sandbox · no real charge")}</span>
       </p>
 
@@ -1185,5 +1275,61 @@ function Orders({ lang }: { lang: Lang }) {
         </div>
       )}
     </div>
+  );
+}
+
+/** 免费可用 vs 订阅解锁: makes the paywall boundary explicit before the plan cards. */
+function BenefitSplit({ lang }: { lang: Lang }) {
+  const t = (zh: string, en: string) => (lang === "zh" ? zh : en);
+  const free: [string, string][] = [
+    ["实时行情、资讯与快讯", "Live quotes, news and flashes"],
+    ["模拟交易（虚拟资金）与资产管理", "Paper trading with virtual funds"],
+    ["每日签到奖励、直播观看与社区互动", "Check-in rewards, live rooms and community"],
+    ["AI 功能每日共 3 次", "3 AI analyses a day in total"],
+  ];
+  const paid: [string, string, string][] = [
+    ["每日 20 / 80 / 300 次 AI 分析", "20 / 80 / 300 AI analyses a day", t("普通起", "Basic+")],
+    ["AI诊股 · AI分析 · K线分析 · 特色指标共用额度", "Shared by AI Diagnose, insights, K-line and indicators", t("普通起", "Basic+")],
+    ["Ace智搜深度思考与优先分析通道", "Ace deep thinking and priority queue", t("高级起", "Premium+")],
+    ["至尊专属客服", "Dedicated elite support", t("至尊", "Elite")],
+  ];
+  return (
+    <section className="mb-split" aria-label={t("权益说明", "What's included")}>
+      <div className="mb-split-col is-free">
+        <h3>
+          <Unlock size={15} />
+          {t("免费可用 · 无需订阅", "Free · no subscription")}
+        </h3>
+        <ul>
+          {free.map(([zh, en]) => (
+            <li key={zh}>
+              <Check size={13} strokeWidth={3} />
+              {t(zh, en)}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="mb-split-col is-paid">
+        <h3>
+          <Lock size={15} />
+          {t("订阅会员解锁", "Unlocked by membership")}
+        </h3>
+        <ul>
+          {paid.map(([zh, en, tag]) => (
+            <li key={zh}>
+              <Crown size={13} />
+              <span>{t(zh, en)}</span>
+              <em>{tag}</em>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <p className="mb-split-note">
+        {t(
+          "会员仅提升 AI 功能的使用额度与服务权益，不提供真实交易，也不保证任何投资收益。",
+          "A membership only raises AI usage limits and service benefits. It offers no real trading and promises no returns.",
+        )}
+      </p>
+    </section>
   );
 }

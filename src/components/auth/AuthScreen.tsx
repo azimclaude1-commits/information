@@ -54,6 +54,7 @@ import {
   type Provider,
 } from "./SocialAuth";
 import "./auth.css";
+import { LegalBody } from "../compliance/Compliance";
 import "./socialAuth.css";
 
 const FLAGS = import.meta.glob<string>(
@@ -324,7 +325,7 @@ export function AuthScreen({
               onClose={() => setPicker(false)}
             />
           )}
-          {doc && <DocSheet t={t} doc={doc} onClose={() => setDoc(null)} />}
+          {doc && <DocSheet t={t} lang={lang} doc={doc} onClose={() => setDoc(null)} />}
           {captcha && (
             <SlideCaptcha
               t={t}
@@ -1223,45 +1224,29 @@ function CountryPicker({
 /* ---------------- Legal documents ---------------- */
 function DocSheet({
   t,
+  lang,
   doc,
   onClose,
 }: {
   t: T;
+  lang: Lang;
   doc: "terms" | "privacy";
   onClose: () => void;
 }) {
-  const sections =
-    doc === "terms"
-      ? [
-          [t("服务说明", "Service"), t("AlphaPulse 提供 CFD 与加密市场的模拟交易、行情资讯、AI 分析与直播服务。所有交易均使用虚拟资金，不涉及真实资金的存入、提取或交易。", "AlphaPulse provides paper trading for CFD and crypto markets, market news, AI analysis and live rooms. All trading uses virtual funds; no real money is deposited, withdrawn or traded.")],
-          [t("账户与安全", "Account & security"), t("你应妥善保管登录凭证，不得出借、转让账户。发现异常登录请及时修改密码。", "Keep your credentials safe and do not share or transfer your account. Change your password if you notice unusual activity.")],
-          [t("内容与风险提示", "Content & risk"), t("平台内的分析、策略与直播观点仅供学习交流，不构成投资建议。模拟收益不代表真实交易结果。", "Analysis, strategies and live commentary are for education only and are not investment advice. Simulated results do not represent real trading outcomes.")],
-          [t("社区规范", "Community"), t("禁止发布广告引流、骚扰辱骂及收益承诺等内容，违规账号可能被限制使用。", "Spam, harassment and promises of returns are prohibited. Violations may lead to restrictions.")],
-        ]
-      : [
-          [t("我们收集的信息", "What we collect"), t("注册所用的邮箱或手机号、加密存储的密码，以及你在模拟交易与社区中的操作记录。", "The email or mobile number you register with, your encrypted password, and your activity in paper trading and the community.")],
-          [t("信息的使用", "How we use it"), t("用于账户登录、安全验证、发送通知以及改进产品体验。我们不会出售你的个人信息。", "To sign you in, verify security, send notifications and improve the product. We never sell your personal information.")],
-          [t("你的权利", "Your rights"), t("你可以随时查看、更正或删除账户信息，也可以在设置中关闭营销通知。", "You can view, correct or delete your account information at any time and turn off marketing notifications in settings.")],
-        ];
+  const title = doc === "terms" ? t("用户协议", "Terms of Service") : t("隐私政策", "Privacy Policy");
   return (
-    <div className="au-layer" role="dialog" aria-label={doc === "terms" ? t("用户协议", "Terms of Service") : t("隐私政策", "Privacy Policy")}>
+    <div className="au-layer" role="dialog" aria-label={title}>
       <header className="au-layer-head">
         <button className="au-icon" aria-label={t("返回", "Back")} onClick={onClose}>
           <ChevronLeft size={20} />
         </button>
-        <h2>{doc === "terms" ? t("用户协议", "Terms of Service") : t("隐私政策", "Privacy Policy")}</h2>
+        <h2>{title}</h2>
         <span />
       </header>
       <div className="au-doc">
-        <small>{t("更新日期：2026 年 10 月", "Updated October 2026")}</small>
-        {sections.map(([h, p]) => (
-          <section key={h}>
-            <h3>{h}</h3>
-            <p>{p}</p>
-          </section>
-        ))}
+        <LegalBody lang={lang} doc={doc} />
         <button className="au-submit" onClick={onClose}>
-          {t("我已了解", "Got it")}
+          {t("我已阅读", "Done")}
         </button>
       </div>
     </div>

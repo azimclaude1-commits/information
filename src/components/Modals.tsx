@@ -3,17 +3,15 @@ import {
   CalendarCheck2,
   Check,
   ChevronRight,
+  FileText,
   Gift,
   MessageSquareText,
   Sparkles,
   Star,
   Wallet,
 } from "lucide-react";
-import {
-  CHECK_IN_REWARD_USDT,
-  RATING_REWARD_USDT,
-  STREAK_BONUS_USDT,
-} from "./demoTrading";
+import { CHECK_IN_REWARD_USDT, STREAK_BONUS_USDT } from "./demoTrading";
+import { useCompliance } from "./compliance/Compliance";
 import { useSavedState } from "./marketModel";
 import { Sheet } from "./ui/Sheet";
 import "./rewards.css";
@@ -77,7 +75,10 @@ const KINDS: [string, string][] = [
   ["其他", "Other"],
 ];
 
-/** 签到与奖励: daily check-in streak, product rating reward and feedback. Persisted per device. */
+/**
+ * 签到与奖励: daily check-in streak with published rules, plus an in-app experience rating and feedback.
+ * Ratings are never rewarded and never mention an app store (stores forbid incentivised reviews).
+ */
 export const CheckInAndRateModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
@@ -101,6 +102,7 @@ function RewardsSheet({
   onClaimReward: (amount: number, note: string) => void;
 }) {
   const t = (zh: string, en: string) => (lang === "zh" ? zh : en);
+  const compliance = useCompliance();
   const [state, setState] = useSavedState<RewardState>(
     "alphapulse.rewards.v1",
     seed(),
@@ -147,15 +149,14 @@ function RewardsSheet({
     );
   };
   const tagList = stars && stars <= 3 ? LOW_TAGS : TAGS;
-  const pending = !!state.rating && !state.ratingClaimed;
 
   if (view === "rate")
     return (
       <Sheet
-        title={t("产品体验评分", "Rate AlphaPulse")}
+        title={t("产品体验评价", "Rate your experience")}
         subtitle={t(
-          `提交评分可领 ${RATING_REWARD_USDT} USDT`,
-          `Earn ${RATING_REWARD_USDT} USDT for rating`,
+          "评价仅用于改进产品，提交后不会获得任何奖励",
+          "Your rating helps us improve. It is not rewarded.",
         )}
         onBack={() => setView("home")}
         onClose={onClose}
@@ -171,7 +172,7 @@ function RewardsSheet({
               setView("home");
             }}
           >
-            {t("提交评分", "Submit rating")}
+            {t("提交评价", "Submit")}
           </button>
         }
       >
@@ -378,6 +379,43 @@ function RewardsSheet({
         </p>
       </section>
 
+      <section className="sh-section rw-rules">
+        <h3>
+          {t("签到奖励规则", "Reward rules")}
+          <button className="rw-rules-link" onClick={() => compliance.openLegal("rewards")}>
+            <FileText size={13} />
+            {t("完整细则", "Full rules")}
+            <ChevronRight size={13} />
+          </button>
+        </h3>
+        <table className="rw-rules-table">
+          <tbody>
+            <tr>
+              <th>{t("第 1–6 天", "Days 1–6")}</th>
+              <td>{t(`每天 ${CHECK_IN_REWARD_USDT} USDT`, `${CHECK_IN_REWARD_USDT} USDT / day`)}</td>
+            </tr>
+            <tr>
+              <th>{t("第 7 天", "Day 7")}</th>
+              <td>
+                {CHECK_IN_REWARD_USDT} + {t("连续奖励", "bonus")} {STREAK_BONUS_USDT} = {CHECK_IN_REWARD_USDT + STREAK_BONUS_USDT} USDT
+              </td>
+            </tr>
+            <tr>
+              <th>{t("每轮合计", "Per 7-day cycle")}</th>
+              <td>
+                {CHECK_IN_REWARD_USDT} × 7 + {STREAK_BONUS_USDT} = {CHECK_IN_REWARD_USDT * 7 + STREAK_BONUS_USDT} USDT
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <ul className="rw-rules-list">
+          <li>{t("每个自然日可签到 1 次，漏签不可补签；断签后从第 1 天重新计算，满 7 天开始新一轮。", "One check-in per calendar day; missed days can't be made up. A missed day restarts at day 1; after day 7 a new cycle starts.")}</li>
+          <li>{t("奖励即时发放至奖励账户，每笔可在资金记录中查看。", "Rewards land in the Rewards account immediately and are listed in Funding history.")}</li>
+          <li>{t("奖励为虚拟模拟金，不具有现金价值，不能兑换为法币或数字资产，不能用于购买会员。", "Rewards are virtual demo funds with no cash value; they can't be exchanged for money or crypto or pay for a membership.")}</li>
+          <li>{t("签到无需付费、交易、评价或分享；批量注册、脚本等作弊行为获得的奖励将被取消。", "No purchase, trade, review or share is required. Rewards gained by cheating are cancelled.")}</li>
+        </ul>
+      </section>
+
       <section className="sh-section">
         <h3 className="rw-cal-head">
           {monthDays.label}
@@ -402,43 +440,26 @@ function RewardsSheet({
       </section>
 
       <section className="sh-section">
-        <h3>{t("奖励任务", "Reward tasks")}</h3>
+        <h3>{t("反馈与评价", "Feedback")}</h3>
         <div className="sh-list">
           <div>
             <span className="sh-li-icon rw-ic-star">
               <Star size={18} />
             </span>
             <div className="sh-li-main">
-              <b>{t("产品体验评分", "Rate the app")}</b>
+              <b>{t("产品体验评价", "Rate your experience")}</b>
               <small>
                 {state.rating
                   ? t(
                       `已评 ${state.rating.stars} 星${state.rating.tags.length ? ` · ${state.rating.tags.join("、")}` : ""}`,
                       `Rated ${state.rating.stars} stars`,
                     )
-                  : t(`完成评分奖励 ${RATING_REWARD_USDT} USDT`, `Earn ${RATING_REWARD_USDT} USDT`)}
+                  : t("告诉我们你的使用感受，帮助我们改进", "Tell us how it's going")}
               </small>
             </div>
-            {state.ratingClaimed ? (
-              <span className="sh-badge is-ok">
-                <Check size={12} />
-                {t("已领取", "Claimed")}
-              </span>
-            ) : pending ? (
-              <button
-                className="sh-btn sh-btn-sm rw-claim"
-                onClick={() => {
-                  setState((s) => ({ ...s, ratingClaimed: true }));
-                  onClaimReward(RATING_REWARD_USDT, "产品评分奖励");
-                }}
-              >
-                {t(`领取 +${RATING_REWARD_USDT}`, `Claim +${RATING_REWARD_USDT}`)}
-              </button>
-            ) : (
-              <button className="sh-btn sh-btn-sm sh-btn-primary" onClick={() => setView("rate")}>
-                {t("去评分", "Rate")}
-              </button>
-            )}
+            <button className="sh-btn sh-btn-sm" onClick={() => setView("rate")}>
+              {state.rating ? t("修改", "Edit") : t("去评价", "Rate")}
+            </button>
           </div>
           <div>
             <span className="sh-li-icon rw-ic-fb">
@@ -461,8 +482,8 @@ function RewardsSheet({
       <p className="sh-note is-info">
         <Sparkles size={15} />
         {t(
-          "奖励以 USDT 模拟金发放至奖励账户，可在「奖励提现」中转出，每笔手续费 1 USDT。",
-          "Rewards are demo USDT in your reward account and can be withdrawn (1 USDT fee).",
+          "评价与反馈仅用于改进产品，不会获得奖励，也不影响签到奖励。",
+          "Ratings and feedback only help us improve; they are never rewarded and don't affect check-in rewards.",
         )}
       </p>
     </Sheet>

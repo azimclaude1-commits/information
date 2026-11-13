@@ -37,6 +37,7 @@ import type { AccountSummary, MarketKind } from "./demoTrading";
 import { useMinWidth } from "./marketModel";
 import { HomeMarketOverview } from "./HomeMarketOverview";
 import { LiveBanner } from "./live/LiveShared";
+import { AiNotice, ReportButton } from "./compliance/Compliance";
 import type { LiveStore } from "./live/useLive";
 
 type Lang = "zh" | "en";
@@ -808,7 +809,8 @@ export function HomeDashboard({
   /* ---------------- AI 洞察 panels ---------------- */
 
   const aiInsights = (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-4">
+    <div className="p-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
       {AI_INSIGHTS.map((item) => {
         const inst = bySymbol(item.symbol);
         const bull = item.stance === "bullish";
@@ -856,15 +858,22 @@ export function HomeDashboard({
         );
       })}
     </div>
+    <AiNotice
+      compact
+      source="market"
+      target={{ kind: "ai", id: "home:ai-insights", title: t("首页 AI 解读", "Home AI insights") }}
+    />
+    </div>
   );
 
   const opportunities = (
+    <>
     <ol className="grid grid-cols-1 md:grid-cols-2 gap-x-4 p-2 sm:p-3">
       {MARKET_OPPORTUNITIES.map((o, idx) => (
-        <li key={o.id}>
+        <li key={o.id} className="flex items-start gap-1">
           <button
             onClick={() => diagnose(o.symbol)}
-            className="group w-full flex items-start gap-3 text-left px-2.5 py-3 rounded-lg hover:bg-surface-2 transition-colors"
+            className="group flex-1 min-w-0 flex items-start gap-3 text-left px-2.5 py-3 rounded-lg hover:bg-surface-2 transition-colors"
           >
             <span
               className={`w-5 h-5 mt-px shrink-0 rounded-md text-[11px] font-bold flex items-center justify-center ${
@@ -878,9 +887,22 @@ export function HomeDashboard({
             </span>
             <span className="ui-badge shrink-0 mt-px">{o.symbol}</span>
           </button>
+          <ReportButton
+            iconOnly
+            size={13}
+            className="shrink-0 mt-3.5 p-1"
+            target={{ kind: "opportunity", id: `opportunity:${o.id}`, title: stripIndex(lang === "zh" ? o.zh : o.en).slice(0, 28) }}
+          />
         </li>
       ))}
     </ol>
+    <p className="px-4 pb-3 text-[11.5px] leading-5 text-ink-3">
+      {t(
+        "来源：平台行情数据与公开资讯整理，仅供参考，不构成投资建议。发现不实或违规内容可点击旗标举报。",
+        "Source: platform quotes and public news. For reference only, not investment advice. Use the flag to report inaccurate or abusive content.",
+      )}
+    </p>
+    </>
   );
 
   const hotTopics = (
