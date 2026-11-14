@@ -207,7 +207,7 @@ export const AiDiagnoseView: React.FC<AiDiagnoseModalProps> = ({
 
   // Build Cross-Platform Trading Pairs matrix (Column 1 of Screenshot 2)
   const crossExchangePairs = [
-    { pair: `${currentInst.symbol}/USD`, platform: 'AlphaPulse CFD 零佣金永续', price: currentInst.price, change: currentInst.changePercent24h },
+    { pair: `${currentInst.symbol}/USD`, platform: 'TickVelo CFD 零佣金永续', price: currentInst.price, change: currentInst.changePercent24h },
     { pair: `${currentInst.symbol}/USD`, platform: 'Mitrade 国际差价合约', price: Number((currentInst.price * 1.0002).toFixed(currentInst.decimals)), change: Number((currentInst.changePercent24h + 0.04).toFixed(2)) },
     { pair: `${currentInst.symbol}/USDT`, platform: '欧易 OKX USDT 永续', price: Number((currentInst.price * 0.9997).toFixed(currentInst.decimals)), change: Number((currentInst.changePercent24h - 0.05).toFixed(2)) },
     { pair: `${currentInst.symbol}/USDT`, platform: '币安 Binance 永续合约', price: Number((currentInst.price * 1.0005).toFixed(currentInst.decimals)), change: Number((currentInst.changePercent24h + 0.08).toFixed(2)) },

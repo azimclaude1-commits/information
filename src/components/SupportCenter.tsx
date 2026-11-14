@@ -124,14 +124,14 @@ export function SupportCenter({ lang, account, onClose }: { lang: Lang; account:
   const send = (text = draft) => {
     const v = text.trim();
     if (!v) return;
-    if (!store.chat.length) push({ from: "bot", text: t("你好，我是 AlphaPulse 智能助手。", "Hi, I'm the AlphaPulse assistant.") });
+    if (!store.chat.length) push({ from: "bot", text: t("你好，我是 TickVelo 智能助手。", "Hi, I'm the TickVelo assistant.") });
     push({ from: "user", text: v });
     setDraft("");
     answer(v);
   };
   const openChat = () => {
     if (!store.chat.length)
-      push({ from: "bot", text: t("你好，我是 AlphaPulse 智能助手，可以帮你解答账户、交易、资产和直播相关问题。也可以回复「人工」联系在线客服。", "Hi, I'm the AlphaPulse assistant. Ask about accounts, trading, assets or live streams, or reply \"agent\" for a person.") });
+      push({ from: "bot", text: t("你好，我是 TickVelo 智能助手，可以帮你解答账户、交易、资产和直播相关问题。也可以回复「人工」联系在线客服。", "Hi, I'm the TickVelo assistant. Ask about accounts, trading, assets or live streams, or reply \"agent\" for a person.") });
     setView("chat");
   };
   const ticket = store.tickets.find((x) => x.id === ticketId);
@@ -444,13 +444,13 @@ export function SupportCenter({ lang, account, onClose }: { lang: Lang; account:
       <div className="sh-section">
         <h3>{t("其他联系方式", "Other channels")}</h3>
         <div className="sh-list">
-          <a className="sp-contact" href="mailto:support@alphapulse.app">
+          <a className="sp-contact" href="mailto:support@tickvelo.app">
             <span className="sh-li-icon">
               <Mail size={18} />
             </span>
             <div className="sh-li-main">
               <b>{t("邮件支持", "Email")}</b>
-              <small>support@alphapulse.app</small>
+              <small>support@tickvelo.app</small>
             </div>
             <ChevronRight size={16} className="sh-muted" />
           </a>

@@ -4,13 +4,13 @@
  */
 
 export const OPERATOR = {
-  zh: "AlphaPulse 科技有限公司",
-  en: "AlphaPulse Technology Ltd.",
+  zh: "TickVelo 科技有限公司",
+  en: "TickVelo Technology Ltd.",
 };
 
 export const CONTACT = {
-  email: "support@alphapulse.app",
-  privacyEmail: "privacy@alphapulse.app",
+  email: "support@tickvelo.app",
+  privacyEmail: "privacy@tickvelo.app",
   phone: "+852 3001 8866",
   hours: {
     zh: "周一至周日 09:00–22:00（UTC+8）",

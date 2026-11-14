@@ -127,7 +127,7 @@ function GoogleFlow({ t, onDone, onCancel }: { t: T; onDone: (i: AuthIdentity) =
         <>
           <h1>{t("选择账号", "Choose an account")}</h1>
           <p>
-            {t("以继续使用", "to continue to")} <b>AlphaPulse</b>
+            {t("以继续使用", "to continue to")} <b>TickVelo</b>
           </p>
           <ul className="oa-google-list">
             {GOOGLE_ACCOUNTS.map((a) => (
@@ -156,8 +156,8 @@ function GoogleFlow({ t, onDone, onCancel }: { t: T; onDone: (i: AuthIdentity) =
           </ul>
           <p className="oa-fine">
             {t(
-              "如果继续，Google 将会与 AlphaPulse 分享您的姓名、电子邮件地址、语言偏好设置和个人资料照片。在使用此应用前，请查看其隐私权政策和服务条款。",
-              "To continue, Google will share your name, email address, language preference and profile picture with AlphaPulse. Review its privacy policy and terms before using this app.",
+              "如果继续，Google 将会与 TickVelo 分享您的姓名、电子邮件地址、语言偏好设置和个人资料照片。在使用此应用前，请查看其隐私权政策和服务条款。",
+              "To continue, Google will share your name, email address, language preference and profile picture with TickVelo. Review its privacy policy and terms before using this app.",
             )}
           </p>
         </>
@@ -172,7 +172,7 @@ function GoogleFlow({ t, onDone, onCancel }: { t: T; onDone: (i: AuthIdentity) =
         >
           <h1>{t("登录", "Sign in")}</h1>
           <p>
-            {t("以继续使用", "to continue to")} <b>AlphaPulse</b>
+            {t("以继续使用", "to continue to")} <b>TickVelo</b>
           </p>
           <label className="oa-google-field">
             <input
@@ -202,7 +202,7 @@ function GoogleFlow({ t, onDone, onCancel }: { t: T; onDone: (i: AuthIdentity) =
             <span className="oa-dots" />
             <GoogleLogo size={28} />
           </div>
-          <h1>{t("AlphaPulse 想要访问您的 Google 账号", "AlphaPulse wants to access your Google Account")}</h1>
+          <h1>{t("TickVelo 想要访问您的 Google 账号", "TickVelo wants to access your Google Account")}</h1>
           <button className="oa-google-chip" onClick={() => setStep("choose")}>
             <span className="oa-avatar is-sm" style={{ background: account.color }}>
               {account.name[0]}
@@ -210,7 +210,7 @@ function GoogleFlow({ t, onDone, onCancel }: { t: T; onDone: (i: AuthIdentity) =
             {account.email}
             <ChevronDown size={14} />
           </button>
-          <p className="oa-google-sub">{t("这将使 AlphaPulse 能够：", "This will allow AlphaPulse to:")}</p>
+          <p className="oa-google-sub">{t("这将使 TickVelo 能够：", "This will allow TickVelo to:")}</p>
           <ul className="oa-perms">
             <li>
               <UserRound size={18} />
@@ -222,7 +222,7 @@ function GoogleFlow({ t, onDone, onCancel }: { t: T; onDone: (i: AuthIdentity) =
             </li>
           </ul>
           <div className="oa-google-trust">
-            <b>{t("确保 AlphaPulse 是您信任的应用", "Make sure you trust AlphaPulse")}</b>
+            <b>{t("确保 TickVelo 是您信任的应用", "Make sure you trust TickVelo")}</b>
             <span>
               {t(
                 "您可能会与此网站或应用分享敏感信息。您可以随时在 Google 账号中移除访问权限。",
@@ -283,11 +283,11 @@ function AppleFlow({ t, onDone }: { t: T; onDone: (i: AuthIdentity) => void }) {
         <span>{t("使用 Apple 登录", "Sign in with Apple")}</span>
       </div>
       <AppMark />
-      <h1>{t("使用你的 Apple 账户登录“AlphaPulse”", "Use your Apple Account to sign in to AlphaPulse")}</h1>
+      <h1>{t("使用你的 Apple 账户登录“TickVelo”", "Use your Apple Account to sign in to TickVelo")}</h1>
       {step === "form" ? (
         <>
           <p className="oa-apple-sub">
-            {t("创建账户时，AlphaPulse 只会收到以下信息。", "AlphaPulse will only receive the info below.")}
+            {t("创建账户时，TickVelo 只会收到以下信息。", "TickVelo will only receive the info below.")}
           </p>
           <div className="oa-apple-group">
             <label>
@@ -367,7 +367,7 @@ function TelegramFlow({
         <TelegramLogo size={56} />
         <h1>{t("使用 Telegram 登录", "Log in with Telegram")}</h1>
         <p>
-          <b>AlphaPulse</b> {t("请求使用你的 Telegram 账号登录", "wants to log in with your Telegram account")}
+          <b>TickVelo</b> {t("请求使用你的 Telegram 账号登录", "wants to log in with your Telegram account")}
         </p>
       </div>
       {step === "phone" && (
@@ -406,8 +406,8 @@ function TelegramFlow({
           </button>
           <p className="oa-fine">
             {t(
-              "我们将向你的 Telegram 应用发送一条确认消息。AlphaPulse 不会看到你的手机号码。",
-              "We'll send a confirmation message to your Telegram app. AlphaPulse won't see your phone number.",
+              "我们将向你的 Telegram 应用发送一条确认消息。TickVelo 不会看到你的手机号码。",
+              "We'll send a confirmation message to your Telegram app. TickVelo won't see your phone number.",
             )}
           </p>
         </form>
@@ -425,7 +425,7 @@ function TelegramFlow({
             </header>
             <p>
               {t("登录请求：", "Login request: ")}
-              <b>AlphaPulse</b> (alphapulse.app) {t("请求使用你的账号登录。", "wants to log in with your account.")}
+              <b>TickVelo</b> (tickvelo.app) {t("请求使用你的账号登录。", "wants to log in with your account.")}
             </p>
             <small>
               {t("浏览器", "Browser")}: Chrome · Windows · {t("位置", "Location")}: {lang === "zh" ? c.zh : c.en}
@@ -464,7 +464,7 @@ function TelegramFlow({
               <small>@alpha_trader · {full}</small>
             </span>
           </div>
-          <p className="oa-tg-sub">{t("AlphaPulse 将获得：", "AlphaPulse will receive:")}</p>
+          <p className="oa-tg-sub">{t("TickVelo 将获得：", "TickVelo will receive:")}</p>
           <ul className="oa-perms">
             <li>
               <UserRound size={18} />
@@ -473,7 +473,7 @@ function TelegramFlow({
           </ul>
           <label className="oa-tg-check">
             <input type="checkbox" checked={allowMsg} onChange={(e) => setAllowMsg(e.target.checked)} />
-            {t("允许 AlphaPulse 向你发送消息（开播提醒、价格预警）", "Allow AlphaPulse to send you messages (live alerts, price alerts)")}
+            {t("允许 TickVelo 向你发送消息（开播提醒、价格预警）", "Allow TickVelo to send you messages (live alerts, price alerts)")}
           </label>
           <button
             className="oa-tg-btn"

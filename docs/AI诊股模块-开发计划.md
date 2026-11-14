@@ -184,7 +184,7 @@
 - `api` 与 `worker` 用同一个代码库、两个进程（同一镜像，入口命令不同）。
 - `api` 只读缓存；缓存未命中时可以按需调用 Provider（诊股新标的、Ace 工具），通过 Redis 锁实现 single-flight。
 
-### 4.1 仓库结构（新项目 `alphapulse-ai-research/`）
+### 4.1 仓库结构（新项目 `tickvelo-ai-research/`）
 
 ```
 contracts/openapi.yaml           # 唯一契约（后端维护，前端只读）
@@ -345,7 +345,7 @@ event: error     data: {"code","message"}
 
 ### 5.9 鉴权与限流
 
-- 宿主签发 **RS256** JWT：`{iss:"alphapulse", aud:"ai-research", sub:<userId>, exp, iat}`；本服务通过 `JWT_JWKS_URL` 或 `JWT_PUBLIC_KEY` 校验，不持有私钥。
+- 宿主签发 **RS256** JWT：`{iss:"tickvelo", aud:"ai-research", sub:<userId>, exp, iat}`；本服务通过 `JWT_JWKS_URL` 或 `JWT_PUBLIC_KEY` 校验，不持有私钥。
 - 匿名可访问（按 IP 限流）：instruments、quotes、hotlists、heatmap、读取缓存诊股报告、爆仓 SSE。
 - 需要 JWT：诊股强制刷新、Ace 全部接口。
 - 开发环境：`ENV=dev` 时开放 `POST /v1/dev/guest-token`（用本地密钥对签发），生产环境禁用。

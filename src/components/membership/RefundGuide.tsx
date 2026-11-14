@@ -31,13 +31,13 @@ const GUIDES: Record<Channel, Guide> = {
     steps: [
       ["在浏览器打开 reportaproblem.apple.com，使用购买时的 Apple ID 登录", "Open reportaproblem.apple.com and sign in with the Apple ID you used"],
       ["点击「我想要」→「申请退款」，选择退款原因", "Tap I'd like to → Request a refund, then choose a reason"],
-      ["在列表中选择 AlphaPulse 会员订单并提交", "Pick the AlphaPulse membership order and submit"],
+      ["在列表中选择 TickVelo 会员订单并提交", "Pick the TickVelo membership order and submit"],
       ["Apple 审核通过后会邮件通知你，会员权益随之终止", "Apple emails you when it's approved; the membership then ends"],
     ],
     timing: ["Apple 审核通常需 24–48 小时，退款 5–10 个工作日原路退回", "Apple usually decides within 24–48 h; money returns in 5–10 business days"],
     cancel: [
       ["打开 iPhone「设置」，点击顶部你的名字", "Open Settings and tap your name"],
-      ["点击「订阅」→ AlphaPulse", "Tap Subscriptions → AlphaPulse"],
+      ["点击「订阅」→ TickVelo", "Tap Subscriptions → TickVelo"],
       ["点击「取消订阅」并确认", "Tap Cancel subscription and confirm"],
     ],
     note: ["我们无法直接为 App Store 订单退款，如遇问题可联系客服协助", "We can't refund App Store orders ourselves, but support can help with the request"],
@@ -48,14 +48,14 @@ const GUIDES: Record<Channel, Guide> = {
     who: ["通过 Android 应用内购买的会员", "Purchases made in the Android app"],
     steps: [
       ["打开 Google Play，点击右上角头像 →「付款和订阅」", "Open Google Play → profile → Payments & subscriptions"],
-      ["进入「预算和历史记录」，找到 AlphaPulse 会员订单", "Open Budget & history and find the AlphaPulse order"],
+      ["进入「预算和历史记录」，找到 TickVelo 会员订单", "Open Budget & history and find the TickVelo order"],
       ["购买 48 小时内：点击「申请退款」并选择原因提交", "Within 48 hours: tap Request a refund and choose a reason"],
       ["超过 48 小时：在「联系我们」提交订单号，由我们审核后通过 Google Play 退款", "After 48 hours: send us the order number; we review and refund through Google Play"],
     ],
     timing: ["Google 通常 1–4 个工作日内处理，退款原路退回", "Google usually decides in 1–4 business days; money returns to the original method"],
     cancel: [
       ["打开 Google Play，点击头像 →「付款和订阅」→「订阅」", "Google Play → profile → Payments & subscriptions → Subscriptions"],
-      ["选择 AlphaPulse", "Choose AlphaPulse"],
+      ["选择 TickVelo", "Choose TickVelo"],
       ["点击「取消订阅」并按提示确认", "Tap Cancel subscription and confirm"],
     ],
   },

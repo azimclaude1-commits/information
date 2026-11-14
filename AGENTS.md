@@ -1,4 +1,6 @@
-# AlphaPulse prototype — agent notes
+# TickVelo prototype — agent notes
+
+Product name: **TickVelo** (renamed from AlphaPulse). Use it in all visible copy, legal texts and file names. `localStorage` keys keep the legacy `alphapulse.*` prefix on purpose — renaming them would drop every saved demo account, membership and setting.
 
 React 19 + Vite 8 + Tailwind CSS v4 single-page prototype (CFD / crypto **demo-trading** terminal, AICoin-style features). Hash routing lives in `src/App.tsx` (`#home`, `#trade` = the single CFD交易 desk that also lists crypto, `#flash`, `#headlines`, `#diagnose/<tab>`, `#dividends[/dividends]`, `#news`, `#live`, `#withdraw`). Legacy hashes resolve through `NAV_ALIASES` (`#market` / `#futures` → `#trade`, `#market_overview` → `#home`). Below `lg` the top nav is a fixed bottom tab bar (`MOBILE_TABS`: 首页 / 交易 / AI诊股 / 资讯 / 账户) and `#news` renders `NewsHubView` (快讯 / 要闻 / 资讯日历); `ACTIVE_TAB_OF` decides which tab is highlighted for folded routes. The desktop nav and pages are unchanged above `lg`.
 

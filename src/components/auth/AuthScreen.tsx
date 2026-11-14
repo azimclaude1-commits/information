@@ -159,7 +159,7 @@ export function AuthScreen({
   };
 
   const titles = {
-    login: [t("欢迎回来", "Welcome back"), t("登录你的 AlphaPulse 账户", "Sign in to your AlphaPulse account")],
+    login: [t("欢迎回来", "Welcome back"), t("登录你的 TickVelo 账户", "Sign in to your TickVelo account")],
     register: [t("创建账户", "Create account"), t("支持邮箱或全球手机号注册", "Sign up with email or any mobile number")],
     forgot: [t("重置密码", "Reset password"), t("验证账户后设置新的登录密码", "Verify your account to set a new password")],
     success: ["", ""],
@@ -182,7 +182,7 @@ export function AuthScreen({
             <span>
               <Activity size={20} strokeWidth={2.6} />
             </span>
-            <b>AlphaPulse</b>
+            <b>TickVelo</b>
             <small>PRO</small>
           </div>
           <div className="au-art-copy">
@@ -245,7 +245,7 @@ export function AuthScreen({
                   <span>
                     <Activity size={18} strokeWidth={2.6} />
                   </span>
-                  <b>AlphaPulse</b>
+                  <b>TickVelo</b>
                   <small>PRO</small>
                 </div>
                 <div className="au-title">
@@ -797,7 +797,7 @@ function LoginForm({
         {t("登录", "Sign in")}
       </Submit>
       <p className="au-switch">
-        {t("还没有账户？", "New to AlphaPulse?")}
+        {t("还没有账户？", "New to TickVelo?")}
         <button type="button" onClick={() => go("register")}>
           {t("立即注册", "Create account")}
           <ArrowRight size={14} />
@@ -1067,7 +1067,7 @@ function SuccessView({
       </span>
       <h1>{t("注册成功", "You're all set")}</h1>
       <p>
-        {t("欢迎加入 AlphaPulse，账户 ", "Welcome to AlphaPulse. Account ")}
+        {t("欢迎加入 TickVelo，账户 ", "Welcome to TickVelo. Account ")}
         <b>
           {account.channel === "email"
             ? maskEmail(account.email!)

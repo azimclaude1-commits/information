@@ -205,7 +205,7 @@ export function LiveBanner({
       <img className="live-banner-art" src="/live/studio-hero.png" alt="" />
       <div className="live-banner-copy">
         <span className="live-banner-kicker">
-          <Radio size={15} /> AlphaPulse Live{" "}
+          <Radio size={15} /> TickVelo Live{" "}
           <span className="live-banner-count">
             <i />
             {active.length} {label(lang, "场直播中", "on air")}

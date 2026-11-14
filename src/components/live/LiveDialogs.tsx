@@ -594,8 +594,8 @@ export function ShareDialog({
         ? t("直播预告", "Upcoming")
         : t("精彩回放", "Replay");
   const passage = t(
-    `【AlphaPulse 直播】${host}：${title}\n${status}，点击进入 ${url}`,
-    `[AlphaPulse Live] ${host}: ${title}\n${status} — join at ${url}`,
+    `【TickVelo 直播】${host}：${title}\n${status}，点击进入 ${url}`,
+    `[TickVelo Live] ${host}: ${title}\n${status} — join at ${url}`,
   );
   const copy = (text: string, ok: string) => {
     if (!navigator.clipboard) return onToast(t("请选中链接后复制", "Select the link to copy it"));
@@ -642,11 +642,11 @@ export function ShareDialog({
       ctx.fillText(`${host} · ${room.symbols.slice(0, 3).join(" · ")}`, 48, y + 64);
       ctx.fillStyle = "#6f86ad";
       ctx.font = "22px sans-serif";
-      ctx.fillText("AlphaPulse Live", 48, 930);
+      ctx.fillText("TickVelo Live", 48, 930);
       ctx.fillText(url.replace(/^https?:\/\//, ""), 48, 962);
       const a = document.createElement("a");
       a.href = canvas.toDataURL("image/png");
-      a.download = `alphapulse-live-${room.id}.png`;
+      a.download = `tickvelo-live-${room.id}.png`;
       a.click();
       onToast(t("海报已保存", "Poster saved"));
     };

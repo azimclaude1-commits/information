@@ -540,9 +540,9 @@ export function MarketDetails({
                 {visibleNews.map((n) => (
                   <article className="news-item" key={n.id}>
                     <div className="news-author">
-                      <span className="author-avatar">AP</span>
+                      <span className="author-avatar">TV</span>
                       <div>
-                        <b>AlphaPulse {t("资讯", "News")}</b>
+                        <b>TickVelo {t("资讯", "News")}</b>
                         <small>{n.time}</small>
                       </div>
                     </div>
@@ -1286,7 +1286,7 @@ export function MarketDetails({
               <>
                 <h2>{t(selectedArticle.titleZh, selectedArticle.titleEn)}</h2>
                 <small className="muted">
-                  {selectedArticle.time} · AlphaPulse
+                  {selectedArticle.time} · TickVelo
                 </small>
                 <p className="article-body">
                   {t(selectedArticle.summaryZh, selectedArticle.summaryEn)}
@@ -1294,8 +1294,8 @@ export function MarketDetails({
                 <div className="md-source">
                   <span>
                     {t(
-                      "来源：AlphaPulse 资讯 · 仅供参考，不构成投资建议",
-                      "Source: AlphaPulse News · For reference only, not investment advice",
+                      "来源：TickVelo 资讯 · 仅供参考，不构成投资建议",
+                      "Source: TickVelo News · For reference only, not investment advice",
                     )}
                   </span>
                   <ReportButton

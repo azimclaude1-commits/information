@@ -33,7 +33,7 @@ const seed = (): SecurityState => ({
   loginAlert: true,
   devices: [
     { id: "d0", name: `${browser} · ${os}`, place: "上海 · 中国", at: Date.now(), current: true },
-    { id: "d1", name: "AlphaPulse iOS · iPhone 15 Pro", place: "上海 · 中国", at: Date.now() - 86400000 * 1.4 },
+    { id: "d1", name: "TickVelo iOS · iPhone 15 Pro", place: "上海 · 中国", at: Date.now() - 86400000 * 1.4 },
     { id: "d2", name: "Safari · macOS", place: "香港 · 中国", at: Date.now() - 86400000 * 6.2 },
   ],
 });

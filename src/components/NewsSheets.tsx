@@ -178,7 +178,7 @@ export function ShareSheet({
   onClose: () => void;
 }) {
   const url = `${location.origin}${location.pathname}#${path}`;
-  const text = `${title} | AlphaPulse`;
+  const text = `${title} | TickVelo`;
   const [copied, setCopied] = useState<string | null>(null);
   const copy = (value: string, key: string, msg: string) => {
     navigator.clipboard?.writeText(value).catch(() => {});
@@ -200,7 +200,7 @@ export function ShareSheet({
     ctx.fillRect(0, 0, 750, 360);
     ctx.fillStyle = "rgba(255,255,255,0.85)";
     ctx.font = "600 28px sans-serif";
-    ctx.fillText("AlphaPulse 资讯", 56, 80);
+    ctx.fillText("TickVelo 资讯", 56, 80);
     ctx.fillStyle = "#fff";
     ctx.font = "700 46px sans-serif";
     wrap(ctx, title, 640)
@@ -218,13 +218,13 @@ export function ShareSheet({
     ctx.fillRect(0, 940, 750, 120);
     ctx.fillStyle = "#2962ff";
     ctx.font = "700 30px sans-serif";
-    ctx.fillText("AlphaPulse", 56, 1008);
+    ctx.fillText("TickVelo", 56, 1008);
     ctx.fillStyle = "#8a93a5";
     ctx.font = "24px sans-serif";
     ctx.fillText("打开 App 阅读全文", 470, 1008);
     const a = document.createElement("a");
     a.href = c.toDataURL("image/png");
-    a.download = `alphapulse-${path.replace(/\W+/g, "-")}.png`;
+    a.download = `tickvelo-${path.replace(/\W+/g, "-")}.png`;
     a.click();
     onToast?.("海报已保存");
   };
@@ -241,7 +241,7 @@ export function ShareSheet({
   return (
     <Sheet title="分享" onClose={onClose}>
       <div className="ns-card">
-        <small>AlphaPulse 资讯</small>
+        <small>TickVelo 资讯</small>
         <b>{title}</b>
         <p>{excerpt}</p>
         <span>{meta}</span>

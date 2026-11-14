@@ -1258,7 +1258,7 @@ export function MarketChart({
                 fontSize="23"
                 fontWeight="700"
               >
-                AlphaPulse
+                TickVelo
               </text>
               {volume && (
                 <g>

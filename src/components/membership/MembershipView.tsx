@@ -155,7 +155,7 @@ function Center({ lang, onSupport }: { lang: Lang; onSupport: () => void }) {
         <div className="mb-hero-main">
           <div className="mb-hero-id">
             <span className={`mb-ava is-${m.tier} is-lg`}>
-              <span>AP</span>
+              <span>TV</span>
               {member && (
                 <i>
                   <Crown size={11} strokeWidth={2.6} />
@@ -668,7 +668,7 @@ function Checkout({ lang, tier: initial }: { lang: Lang; tier: PaidTier }) {
 
   const ctx: PayContext | null = q && {
     lang,
-    item: `AlphaPulse ${t(plan.zh, plan.en)} · ${t("1 个月", "1 month")}`,
+    item: `TickVelo ${t(plan.zh, plan.en)} · ${t("1 个月", "1 month")}`,
     price: q.price,
     credit: q.credit,
     total: q.total,
@@ -1066,7 +1066,7 @@ function OrderDetail({ lang, id, onSupport }: { lang: Lang; id: string; onSuppor
         <p>
           {order.status === "failed" && fail
             ? `${t(fail[0], fail[1])} · ${t("未扣款", "not charged")}`
-            : `AlphaPulse ${t(plan.zh, plan.en)} · ${t("1 个月", "1 month")} · ${kind}`}
+            : `TickVelo ${t(plan.zh, plan.en)} · ${t("1 个月", "1 month")} · ${kind}`}
         </p>
         <ol className={`rd-steps mb-od-steps ${order.status === "failed" ? "is-failed" : ""}`}>
           {steps.map((s, i) => (
@@ -1195,7 +1195,7 @@ function OrderDetail({ lang, id, onSupport }: { lang: Lang; id: string; onSuppor
         <Sheet title={t("电子收据", "Receipt")} subtitle={order.id} size="sm" onClose={() => setReceipt(false)}>
           <div className="mb-receipt">
             <header>
-              <b>AlphaPulse</b>
+              <b>TickVelo</b>
               <span>{t("会员订阅收据", "Subscription receipt")}</span>
             </header>
             <SheetRows

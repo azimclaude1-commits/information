@@ -24,7 +24,7 @@ import { fmtTime, usd } from "./Membership";
 type Lang = "zh" | "en";
 export type PayContext = {
   lang: Lang;
-  /** e.g. "AlphaPulse 高级会员" */
+  /** e.g. "TickVelo 高级会员" */
   item: string;
   price: number;
   credit: number;
@@ -269,7 +269,7 @@ export function ApplePaySheet({
             )}
           </div>
           <div className="ap-total">
-            <span>{t("支付 ALPHAPULSE", "PAY ALPHAPULSE")}</span>
+            <span>{t("支付 TICKVELO", "PAY TICKVELO")}</span>
             <b>{usd(ctx.total)}</b>
           </div>
         </div>
@@ -355,7 +355,7 @@ export function GooglePaySheet({
                 </svg>
               </span>
               <div>
-                <b>AlphaPulse</b>
+                <b>TickVelo</b>
                 <small>{ctx.item}</small>
               </div>
               <strong>{usd(ctx.total)}</strong>
@@ -412,7 +412,7 @@ export function GooglePaySheet({
               </span>
             )}
             <b>{phase === "paying" ? t("正在处理…", "Processing…") : t("已完成", "Done")}</b>
-            <small>{usd(ctx.total)} · AlphaPulse</small>
+            <small>{usd(ctx.total)} · TickVelo</small>
           </div>
         )}
       </div>
@@ -551,7 +551,7 @@ export function CardPaySheet({
         <div className="pay-3ds">
           <header>
             <ShieldCheck size={18} />
-            <b>AlphaPulse Test Bank</b>
+            <b>TickVelo Test Bank</b>
             <span>{BRAND_NAME[brand]} Secure</span>
           </header>
           <p>
@@ -563,7 +563,7 @@ export function CardPaySheet({
           <dl>
             <div>
               <dt>{t("商户", "Merchant")}</dt>
-              <dd>AlphaPulse</dd>
+              <dd>TickVelo</dd>
             </div>
             <div>
               <dt>{t("金额", "Amount")}</dt>
@@ -767,8 +767,8 @@ export function CardPaySheet({
       <p className="pay-secure">
         <ShieldCheck size={14} />
         {t(
-          "卡信息经加密传输，AlphaPulse 不保存完整卡号与安全码。模拟环境不会产生真实扣款。",
-          "Card details are encrypted; AlphaPulse never stores the full number or code. The sandbox never charges a card.",
+          "卡信息经加密传输，TickVelo 不保存完整卡号与安全码。模拟环境不会产生真实扣款。",
+          "Card details are encrypted; TickVelo never stores the full number or code. The sandbox never charges a card.",
         )}
       </p>
       {countryOpen && (

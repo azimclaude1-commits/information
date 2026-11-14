@@ -323,7 +323,7 @@ export function LiveStudioPanel({
                 {t("推流地址", "Stream URL")}
                 <input
                   readOnly
-                  value={`rtmps://stream.alphapulse.example/live/${room.id}`}
+                  value={`rtmps://stream.tickvelo.example/live/${room.id}`}
                   onFocus={(e) => e.target.select()}
                 />
               </label>

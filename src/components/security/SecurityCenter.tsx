@@ -520,8 +520,8 @@ function PhishSheet({ lang, account, onClose, onToast }: { lang: Lang; account: 
     >
       <p className="sc-lead">
         {t(
-          "设置后，AlphaPulse 发给你的所有官方邮件都会带上这串代码。没有防钓鱼码或代码不一致的邮件，都不是我们发送的。",
-          "Every official AlphaPulse email will include this code. Emails without it, or with a different code, are not from us.",
+          "设置后，TickVelo 发给你的所有官方邮件都会带上这串代码。没有防钓鱼码或代码不一致的邮件，都不是我们发送的。",
+          "Every official TickVelo email will include this code. Emails without it, or with a different code, are not from us.",
         )}
       </p>
       {!editing && (
@@ -557,7 +557,7 @@ function PhishSheet({ lang, account, onClose, onToast }: { lang: Lang; account: 
         <div className="sc-mail">
           <header>
             <Mail size={15} />
-            <span>AlphaPulse &lt;no-reply@alphapulse.app&gt;</span>
+            <span>TickVelo &lt;no-reply@tickvelo.app&gt;</span>
           </header>
           <div className="sc-mail-code">
             {t("防钓鱼码", "Anti-phishing code")}: <b>{shown}</b>
@@ -752,7 +752,7 @@ function SecurityHome({
           {row(
             <KeyRound size={18} />,
             t("防钓鱼码", "Anti-phishing code"),
-            state.phish.value ? t(`官方邮件将显示 ${state.phish.value.slice(0, 2)}****`, `Shown in emails as ${state.phish.value.slice(0, 2)}****`) : t("识别仿冒 AlphaPulse 的钓鱼邮件", "Spot fake AlphaPulse emails"),
+            state.phish.value ? t(`官方邮件将显示 ${state.phish.value.slice(0, 2)}****`, `Shown in emails as ${state.phish.value.slice(0, 2)}****`) : t("识别仿冒 TickVelo 的钓鱼邮件", "Spot fake TickVelo emails"),
             !!state.phish.value,
             () => setSheet("phish"),
             t("未设置", "Not set"),
@@ -859,7 +859,7 @@ function AuthenticatorPage({ lang, account, phone, onToast, onBack }: { lang: La
   const [manage, setManage] = useState<"unbind" | "rebind" | null>(null);
   const target = phone || account;
   const codeLabel = phone ? t("短信验证码", "SMS code") : t("邮箱验证码", "Email code");
-  const label = `AlphaPulse (${account.includes("@") ? account : maskPhoneText(account)})`;
+  const label = `TickVelo (${account.includes("@") ? account : maskPhoneText(account)})`;
 
   const bind = () => {
     const e: Record<string, string> = {};

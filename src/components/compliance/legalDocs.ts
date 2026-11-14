@@ -38,8 +38,8 @@ const terms: LegalDoc = {
   id: "terms",
   title: T("用户协议", "Terms of Service"),
   intro: T(
-    `本协议是你与 ${OPERATOR.zh}（以下简称"我们"）就使用 AlphaPulse 应用及相关服务（以下简称"本服务"）订立的协议。请在注册前仔细阅读，尤其是加粗提示的免责与限制条款。你勾选同意或使用本服务，即表示已阅读并接受本协议。`,
-    `These Terms are an agreement between you and ${OPERATOR.en} ("we") for the AlphaPulse app and related services (the "Service"). Please read them before signing up, especially the limitations of liability. By agreeing or using the Service you accept these Terms.`,
+    `本协议是你与 ${OPERATOR.zh}（以下简称"我们"）就使用 TickVelo 应用及相关服务（以下简称"本服务"）订立的协议。请在注册前仔细阅读，尤其是加粗提示的免责与限制条款。你勾选同意或使用本服务，即表示已阅读并接受本协议。`,
+    `These Terms are an agreement between you and ${OPERATOR.en} ("we") for the TickVelo app and related services (the "Service"). Please read them before signing up, especially the limitations of liability. By agreeing or using the Service you accept these Terms.`,
   ),
   sections: [
     S(
@@ -414,14 +414,14 @@ const subscription: LegalDoc = {
       "4. How to cancel auto-renewal",
       L(
         [
-          "iPhone / iPad：设置 → 点击顶部你的名字 → 订阅 → AlphaPulse → 取消订阅；",
-          "Android：Google Play → 头像 → 付款和订阅 → 订阅 → AlphaPulse → 取消订阅；",
+          "iPhone / iPad：设置 → 点击顶部你的名字 → 订阅 → TickVelo → 取消订阅；",
+          "Android：Google Play → 头像 → 付款和订阅 → 订阅 → TickVelo → 取消订阅；",
           "网页端银行卡 / Apple Pay / Google Pay：会员中心 → 自动续费 → 关闭；",
           "请至少在当期到期前 24 小时取消，取消后当期权益保留至到期日。",
         ],
         [
-          "iPhone / iPad: Settings → your name → Subscriptions → AlphaPulse → Cancel subscription.",
-          "Android: Google Play → profile → Payments & subscriptions → Subscriptions → AlphaPulse → Cancel.",
+          "iPhone / iPad: Settings → your name → Subscriptions → TickVelo → Cancel subscription.",
+          "Android: Google Play → profile → Payments & subscriptions → Subscriptions → TickVelo → Cancel.",
           "Web card, Apple Pay or Google Pay: Membership → Auto-renew → Off.",
           "Cancel at least 24 hours before the period ends. Your benefits stay active until the end date.",
         ],

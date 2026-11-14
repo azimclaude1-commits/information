@@ -410,7 +410,7 @@ export default function App() {
             <div className="h-14 px-3 sm:px-4 lg:px-6 flex items-center gap-3 lg:gap-5 xl:gap-8">
               <a
                 href="#home"
-                aria-label="AlphaPulse"
+                aria-label="TickVelo"
                 onClick={(e) => {
                   e.preventDefault();
                   setActiveNav("home");
@@ -422,7 +422,7 @@ export default function App() {
                 </span>
                 <span className="hidden xs:flex items-baseline gap-1.5">
                   <span className="text-[17px] font-bold tracking-[-0.02em] text-ink">
-                    AlphaPulse
+                    TickVelo
                   </span>
                   <span className="text-[10px] font-semibold tracking-[0.16em] uppercase text-ink-3">
                     Pro
